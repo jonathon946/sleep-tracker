@@ -4,6 +4,8 @@ name: Publish to GitHub Pages
 # branch's first push). This workflow mirrors main to gh-pages on every push,
 # and GitHub's own pages-build-deployment then serves it. This avoids the
 # configure-pages enablement API, which the workflow token cannot call.
+# checkout is pinned to a full commit SHA (v4.4.0) per the 2026-09-02
+# security review; the mirror push is a plain fast-forward (no --force).
 
 on:
   push:
@@ -21,6 +23,6 @@ jobs:
   publish:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4.4.0
       - name: Mirror main to gh-pages
-        run: git push origin HEAD:gh-pages --force
+        run: git push origin HEAD:gh-pages

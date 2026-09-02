@@ -1,7 +1,7 @@
 {
-  "name": "Wake Anchor",
-  "short_name": "Wake Anchor",
-  "description": "Answer seven steps, get a personalized evidence-based sleep schedule — then a 3-week self-experiment that tests it.",
+  "name": "Sleep Experiment Tracker",
+  "short_name": "Sleep Exp",
+  "description": "One 30-second log per morning. Three weeks. A pre-registered verdict on when your body wants to wake.",
   "start_url": ".",
   "scope": ".",
   "display": "standalone",

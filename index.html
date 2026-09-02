@@ -7,9 +7,10 @@
 <link rel="apple-touch-icon" href="icon-180.png">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-<title>Sleep Experiment Tracker</title>
+<title>Wake Anchor</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,300;12..96,500;12..96,700&family=IBM+Plex+Sans:wght@400;500;600&display=swap" rel="stylesheet">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,300;12..96,500;12..96,700&family=IBM+Plex+Sans:wght@400;500;600&display=swap" rel="stylesheet" media="print" onload="this.media='all'">
 <style>
 :root{
   --night:#12172E; --panel:#1B2140; --panel2:#20274B;
@@ -24,14 +25,17 @@ header{padding:36px 0 6px}
 h1{font-family:'Bricolage Grotesque',sans-serif;font-weight:700;font-size:32px;line-height:1.05;letter-spacing:-.01em}
 h1 span{background:linear-gradient(90deg,var(--dusk),var(--dawn));-webkit-background-clip:text;background-clip:text;color:transparent}
 h2{font-family:'Bricolage Grotesque',sans-serif;font-weight:700;font-size:21px;margin-bottom:10px}
+h3{font-family:'Bricolage Grotesque',sans-serif;font-weight:700;font-size:16px;margin:14px 0 4px}
 section{margin-top:30px}
 .card{background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:18px}
 .mut{color:var(--muted)}
+small.cite{display:block;color:var(--muted);font-size:12px;margin-top:2px}
 button{font-family:'Bricolage Grotesque',sans-serif;font-weight:700;font-size:15px;color:var(--night);background:linear-gradient(90deg,var(--dusk),var(--dawn));border:0;border-radius:10px;padding:11px 18px;cursor:pointer;width:100%}
 button.ghost{background:var(--panel2);color:var(--ink);border:1px solid var(--line);font-weight:500}
 button:focus-visible,input:focus-visible,select:focus-visible{outline:2px solid var(--dawn);outline-offset:2px}
 label{display:block;font-size:13px;color:var(--muted);margin:12px 0 4px}
 input,select{width:100%;background:var(--panel2);border:1px solid var(--line);border-radius:9px;color:var(--ink);font-family:inherit;font-size:16px;padding:9px 11px;color-scheme:dark}
+input[type=checkbox]{width:auto;accent-color:var(--dusk)}
 .row2{display:grid;grid-template-columns:1fr 1fr;gap:12px}
 .seg{display:flex;gap:8px}
 .seg button{flex:1;background:var(--panel2);color:var(--muted);border:1px solid var(--line);font-weight:500}
@@ -54,6 +58,7 @@ input,select{width:100%;background:var(--panel2);border:1px solid var(--line);bo
 
 .banner{margin-top:14px;border-left:3px solid var(--dusk);background:var(--panel2);border-radius:0 10px 10px 0;padding:12px 14px;font-size:14px}
 .banner b{color:var(--ink)}
+.banner.warn{border-left-color:var(--bad)}
 .banner button{margin-top:10px;width:auto;padding:8px 14px;font-size:13.5px}
 
 .entry{display:grid;grid-template-columns:auto 1fr auto;gap:10px;align-items:center;padding:10px 0;border-bottom:1px solid var(--line);font-size:14px}
@@ -71,17 +76,33 @@ input,select{width:100%;background:var(--panel2);border:1px solid var(--line);bo
 .vstats div{background:var(--panel2);border-radius:10px;padding:10px;text-align:center}
 .vstats b{display:block;font-family:'Bricolage Grotesque',sans-serif;font-size:19px;font-variant-numeric:tabular-nums}
 .vstats span{font-size:11.5px;color:var(--muted)}
-.cmp{display:grid;grid-template-columns:1fr auto 1fr;gap:8px;align-items:center;padding:8px 0;border-bottom:1px solid var(--line);font-size:14px}
-.cmp:last-child{border-bottom:0}
-.cmp .l{text-align:right;color:var(--muted);font-variant-numeric:tabular-nums}
-.cmp .r{font-weight:600;font-variant-numeric:tabular-nums}
-.cmp .lab{font-size:11.5px;color:var(--muted);text-align:center;min-width:86px}
+
+.plan-row{display:grid;grid-template-columns:86px 1fr;gap:12px;padding:9px 0;border-bottom:1px solid var(--line);font-size:14.5px;align-items:baseline}
+.plan-row:last-child{border-bottom:0}
+.plan-row time{font-family:'Bricolage Grotesque',sans-serif;font-weight:700;font-variant-numeric:tabular-nums;color:var(--dawn)}
+.plan-row .what b{color:var(--ink)}
+.plan-row details{margin:2px 0 0}
+.plan-row summary{font-size:12.5px;padding:2px 0}
+.plan-row .why{font-size:13px;color:var(--muted);padding:4px 0 2px}
+.chips{display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px;margin-bottom:12px}
+.chips div{background:var(--panel2);border-radius:10px;padding:10px;text-align:center}
+.chips b{display:block;font-family:'Bricolage Grotesque',sans-serif;font-size:18px;font-variant-numeric:tabular-nums}
+.chips span{font-size:11px;color:var(--muted)}
+
+.step-head{display:flex;justify-content:space-between;align-items:baseline;margin-bottom:6px}
+.step-count{font-size:12.5px;color:var(--muted)}
+.wiznav{display:flex;gap:10px;margin-top:18px}
+.wiznav button.ghost{width:40%}
+.err{color:var(--bad);font-size:13px;margin-top:8px;min-height:1em}
+
 details{margin-top:16px}
 summary{cursor:pointer;color:var(--muted);font-size:14px;padding:6px 0}
 summary:focus-visible{outline:2px solid var(--dawn);outline-offset:2px}
 .rules{font-size:13.5px;color:var(--muted);padding:8px 0 0}
 .rules p{padding:3px 0}
 .rules b{color:var(--ink)}
+.sci p{padding:6px 0;font-size:13.5px;color:var(--muted)}
+.sci b{color:var(--ink)}
 .hidden{display:none}
 .notice{font-size:13px;color:var(--muted);margin-top:10px}
 .danger{color:var(--bad)}
@@ -90,23 +111,147 @@ summary:focus-visible{outline:2px solid var(--dawn);outline-offset:2px}
 <div class="wrap">
 
 <header>
-  <div class="kicker">18–21 days · one question: when does your body want to wake?</div>
-  <h1>Sleep Experiment <span>10:30 → 7:00</span></h1>
+  <div class="kicker">answer honestly once · get a sleep schedule built from your body and your life</div>
+  <h1>Wake <span>Anchor</span></h1>
   <div class="notice" id="storeStatus" role="status" aria-live="polite">Checking storage…</div>
 </header>
 
-<!-- SETUP -->
-<section id="setup" class="hidden">
+<!-- ============ INTAKE WIZARD ============ -->
+<section id="wizSec" class="hidden">
   <div class="card">
-    <h2>Pick Day 1</h2>
-    <p class="mut" style="font-size:14.5px">Day 1 is the first <b style="color:var(--ink)">7:00-alarm morning</b>. The 4 days before it are your baseline — live exactly as you do now (usual alarm, usual poker), just log each morning. We've pre-filled Day 1 as 4 days out so baseline starts tonight.</p>
-    <label for="startDate">Day 1 of Stabilize</label>
-    <input type="date" id="startDate">
-    <div style="margin-top:14px"><button onclick="saveStart()">Start the experiment</button></div>
+    <div class="step-head"><h2 id="wizTitle">Before we start</h2><span class="step-count" id="wizCount"></span></div>
+
+    <div class="wstep" data-step="0">
+      <p class="mut" style="font-size:14.5px">Seven short steps build you a personalized schedule — one fixed wake time, a lights-out that fits <b style="color:var(--ink)">your</b> sleep need and body clock, and a 3-week experiment that tests it against reality instead of taking anyone's word for it. Every recommendation shows its evidence.</p>
+      <p class="mut" style="font-size:13px;margin-top:10px">This is a self-experiment tool, not medical care. If you snore loudly, gasp awake, or fight severe daytime sleepiness, the next steps will point you to the right help.</p>
+    </div>
+
+    <div class="wstep hidden" data-step="1">
+      <h3>Your mornings</h3>
+      <label style="margin-top:4px"><input type="checkbox" id="qNoCommit" onchange="document.getElementById('commitFields').classList.toggle('hidden',this.checked)"> I have no fixed morning commitments</label>
+      <div id="commitFields">
+        <label for="qCommit">Earliest time you must be somewhere / online (typical week)</label>
+        <input type="time" id="qCommit" value="09:00">
+        <div class="row2">
+          <div><label for="qPrep">Minutes you need from waking to being out the door / on</label><input type="number" id="qPrep" min="10" max="240" value="60"></div>
+          <div><label for="qDays">Days per week with that commitment</label><select id="qDays"><option>1</option><option>2</option><option>3</option><option>4</option><option selected>5</option><option>6</option><option>7</option></select></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="wstep hidden" data-step="2">
+      <h3>Sleep on committed days (as it is now)</h3>
+      <div class="row2">
+        <div><label for="qWorkBed">Lights out, typically</label><input type="time" id="qWorkBed" value="23:30"></div>
+        <div><label for="qWorkWake">Wake, typically</label><input type="time" id="qWorkWake" value="07:00"></div>
+      </div>
+      <h3>Sleep on free days</h3>
+      <div class="row2">
+        <div><label for="qFreeBed">Lights out, typically</label><input type="time" id="qFreeBed" value="00:30"></div>
+        <div><label for="qFreeWake">Wake, typically</label><input type="time" id="qFreeWake" value="09:00"></div>
+      </div>
+      <label id="labFreeAlarm">Do you use an alarm on free days?</label>
+      <div class="seg" id="segFreeAlarm" role="group" aria-labelledby="labFreeAlarm">
+        <button type="button" data-v="no" class="on" aria-pressed="true" onclick="seg(this)">No</button>
+        <button type="button" data-v="yes" aria-pressed="false" onclick="seg(this)">Yes</button>
+      </div>
+    </div>
+
+    <div class="wstep hidden" data-step="3">
+      <h3>How much sleep you need</h3>
+      <label for="qAge">Age</label>
+      <select id="qAge">
+        <option value="teen">13–17</option>
+        <option value="adult" selected>18–64</option>
+        <option value="older">65+</option>
+      </select>
+      <label for="qVac">After a relaxed week off (no alarm, debt paid down), you naturally sleep about…</label>
+      <select id="qVac">
+        <option value="390">6½ hours or less</option>
+        <option value="420">7 hours</option>
+        <option value="450" selected>7½ hours</option>
+        <option value="480">8 hours</option>
+        <option value="510">8½ hours</option>
+        <option value="540">9 hours or more</option>
+        <option value="0">No idea</option>
+      </select>
+      <label id="labRefresh">Most mornings right now, do you wake feeling rested?</label>
+      <div class="seg" id="segRefresh" role="group" aria-labelledby="labRefresh">
+        <button type="button" data-v="yes" aria-pressed="false" onclick="seg(this)">Yes</button>
+        <button type="button" data-v="no" class="on" aria-pressed="true" onclick="seg(this)">No</button>
+      </div>
+    </div>
+
+    <div class="wstep hidden" data-step="4">
+      <h3>Your evenings</h3>
+      <label for="qVice">What most often keeps you up past bedtime? (a show, a game, poker, scrolling…)</label>
+      <input type="text" id="qVice" maxlength="40" placeholder="e.g. one more episode">
+      <label for="qCaff">Last caffeine of a typical day</label>
+      <select id="qCaff">
+        <option value="none">I don't use caffeine</option>
+        <option value="600">Morning only (before 10:00)</option>
+        <option value="840" selected>Around lunch (till ~14:00)</option>
+        <option value="1020">Afternoon (till ~17:00)</option>
+        <option value="1200">Evening (after 17:00)</option>
+      </select>
+      <label for="qNap">Naps?</label>
+      <select id="qNap">
+        <option value="never" selected>Rarely or never</option>
+        <option value="sometimes">Sometimes</option>
+        <option value="daily">Most days</option>
+      </select>
+    </div>
+
+    <div class="wstep hidden" data-step="5">
+      <h3>Falling asleep &amp; red flags</h3>
+      <label for="qLatency">Once the lights are out, falling asleep usually takes…</label>
+      <select id="qLatency">
+        <option value="10">Under 15 minutes</option>
+        <option value="20" selected>15–30 minutes</option>
+        <option value="35">30–45 minutes</option>
+        <option value="50">45+ minutes</option>
+      </select>
+      <label id="labSnore">Loud snoring, gasping awake, or told you stop breathing in your sleep?</label>
+      <div class="seg" id="segSnore" role="group" aria-labelledby="labSnore">
+        <button type="button" data-v="no" class="on" aria-pressed="true" onclick="seg(this)">No</button>
+        <button type="button" data-v="yes" aria-pressed="false" onclick="seg(this)">Yes</button>
+      </div>
+    </div>
+
+    <div class="wstep hidden" data-step="6">
+      <h3>Check your answers</h3>
+      <div id="wizReview" class="mut" style="font-size:14px"></div>
+      <p class="mut" style="font-size:13px;margin-top:10px">Generating locks the plan and its verdict rules <b style="color:var(--ink)">before</b> data collection starts — pre-registered, so the result can't be fudged later.</p>
+    </div>
+
+    <p class="err" id="wizErr" role="status" aria-live="polite"></p>
+    <div class="wiznav">
+      <button type="button" class="ghost" id="wizBack" onclick="wizNav(-1)">Back</button>
+      <button type="button" id="wizNext" onclick="wizNav(1)">Next</button>
+    </div>
   </div>
 </section>
 
-<!-- TODAY -->
+<!-- ============ PLAN ============ -->
+<section id="planSec" class="hidden">
+  <h2>Your plan</h2>
+  <div class="card" id="planCard"></div>
+  <div id="planFlags"></div>
+  <div class="card" id="startCard" style="margin-top:16px">
+    <h3 style="margin-top:0">Start the experiment</h3>
+    <p class="mut" style="font-size:14px">Day 1 is your first morning on the new schedule. The five mornings before it are your baseline — live exactly as you do now, just log each morning. We've pre-filled Day 1 four days out, so mornings from today through then count as baseline.</p>
+    <label for="startDate">Day 1</label>
+    <input type="date" id="startDate">
+    <div style="margin-top:14px"><button onclick="saveStart()">Lock it in &amp; start</button></div>
+  </div>
+  <details id="planRedo">
+    <summary>Redo the questions (rebuilds the plan)</summary>
+    <div style="margin-top:8px"><button class="ghost" onclick="redoIntake()">Answer again from scratch</button>
+    <p class="notice">Changing answers mid-experiment would un-pre-register the verdict, so this also clears the start date and any logged entries.</p></div>
+  </details>
+</section>
+
+<!-- ============ TODAY ============ -->
 <section id="todaySec" class="hidden">
   <div class="today">
     <div class="day" id="dayLabel"></div>
@@ -115,33 +260,33 @@ summary:focus-visible{outline:2px solid var(--dawn);outline-offset:2px}
     <div class="now" id="schedule"></div>
     <div id="valve"></div>
     <div class="bar"><i id="progBar" style="width:0%"></i></div>
-    <div class="bar-lab"><span>Baseline</span><span>Stabilize</span><span>Measure</span></div>
+    <div class="bar-lab" id="barLab"><span>Baseline</span><span>Stabilize</span><span>Measure</span></div>
   </div>
 </section>
 
-<!-- LOG FORM -->
+<!-- ============ LOG FORM ============ -->
 <section id="logSec" class="hidden">
   <h2>Morning log</h2>
   <div class="card">
-    <label for="fDate">Night of</label>
+    <label for="fDate">Morning of <span class="hint">(the date you woke up — pre-filled with today)</span></label>
     <input type="date" id="fDate">
     <div class="row2">
       <div><label for="fOut">Lights out</label><input type="time" id="fOut"></div>
       <div><label for="fAsleep">Est. asleep by</label><input type="time" id="fAsleep"></div>
     </div>
     <div class="row2">
-      <div><label for="fWake">Final wake</label><input type="time" id="fWake" value="07:00"></div>
+      <div><label for="fWake">Final wake</label><input type="time" id="fWake"></div>
       <div><label for="fWakes">Overnight wakes</label><input type="number" id="fWakes" min="0" max="9" value="0"></div>
     </div>
     <label id="labMode">Woke by</label>
     <div class="seg" id="segMode" role="group" aria-labelledby="labMode">
-      <button type="button" data-v="alarm" class="on" onclick="seg(this)">Alarm</button>
-      <button type="button" data-v="natural" onclick="seg(this)">Natural</button>
+      <button type="button" data-v="alarm" class="on" aria-pressed="true" onclick="seg(this)">Alarm</button>
+      <button type="button" data-v="natural" aria-pressed="false" onclick="seg(this)">Natural</button>
     </div>
     <label id="labNap">Napped today?</label>
     <div class="seg amber" id="segNap" role="group" aria-labelledby="labNap">
-      <button type="button" data-v="no" class="on" onclick="seg(this)">No</button>
-      <button type="button" data-v="yes" onclick="seg(this)">Yes</button>
+      <button type="button" data-v="no" class="on" aria-pressed="true" onclick="seg(this)">No</button>
+      <button type="button" data-v="yes" aria-pressed="false" onclick="seg(this)">Yes</button>
     </div>
     <div class="row2">
       <div><label for="fRest">Rested (1–5)</label><select id="fRest"><option>1</option><option>2</option><option selected>3</option><option>4</option><option>5</option></select></div>
@@ -153,13 +298,13 @@ summary:focus-visible{outline:2px solid var(--dawn);outline-offset:2px}
   </div>
 </section>
 
-<!-- BASELINE SUMMARY -->
+<!-- ============ BASELINE SUMMARY ============ -->
 <section id="baseSec" class="hidden">
   <h2>Baseline vs. measure</h2>
   <div class="card" id="baseCard"></div>
 </section>
 
-<!-- VERDICT -->
+<!-- ============ VERDICT ============ -->
 <section id="verdictSec" class="hidden">
   <h2>Verdict</h2>
   <div class="card">
@@ -172,31 +317,28 @@ summary:focus-visible{outline:2px solid var(--dawn);outline-offset:2px}
     </div>
     <details>
       <summary>Pre-registered rules (locked before Day 1)</summary>
-      <div class="rules">
-        <p><b>Confirmed:</b> median natural wake within ±20 min of 7:00.</p>
-        <p><b>Shift later:</b> wake ≥7:30 on 4+ valid days.</p>
-        <p><b>Shift earlier:</b> wake before 6:40 with rested ≥4 on 4+ valid days.</p>
-        <p><b>Extend:</b> avg sleep still ≥9h at day 14.</p>
-        <p>Valid = measure phase, day 10+, natural wake, no nap.</p>
-        <p><b>Escape valve:</b> asleep 45+ min after lights-out for 3 straight stabilize nights → lights-out moves 15 min later. The 7:00 wake never moves.</p>
-      </div>
+      <div class="rules" id="rulesBox"></div>
     </details>
-    <div style="margin-top:16px"><button class="ghost" onclick="copyReport()">Copy report for Claude</button></div>
+    <div style="margin-top:16px"><button class="ghost" onclick="copyReport()">Copy plain-text report</button></div>
     <p class="notice" id="copyMsg" role="status" aria-live="polite"></p>
   </div>
 </section>
 
-<!-- HISTORY -->
+<!-- ============ HISTORY ============ -->
 <section id="histSec" class="hidden">
   <h2>Entries</h2>
   <div class="card" id="histList"><p class="mut">No entries yet.</p></div>
+  <details>
+    <summary>Your plan &amp; the science behind it</summary>
+    <div style="margin-top:8px" id="planEcho"></div>
+  </details>
   <details>
     <summary>Backup &amp; restore (belt-and-braces)</summary>
     <div style="margin-top:8px">
       <button class="ghost" onclick="copyBackup()">Copy backup code</button>
       <p class="notice" id="bkMsg" role="status" aria-live="polite"></p>
       <label for="bkIn">Paste a backup code to restore</label>
-      <input id="bkIn" placeholder="{&quot;startDate&quot;:...}">
+      <input id="bkIn" placeholder="{&quot;intake&quot;:...}">
       <div style="margin-top:8px"><button class="ghost" onclick="restoreBackup()">Restore</button></div>
     </div>
   </details>
@@ -206,80 +348,145 @@ summary:focus-visible{outline:2px solid var(--dawn);outline-offset:2px}
   </details>
 </section>
 
+<!-- ============ SCIENCE ============ -->
+<section id="sciSec">
+  <details>
+    <summary>Why you can trust the recommendations (sources)</summary>
+    <div class="sci">
+      <p><b>One fixed wake time, seven days a week.</b> The circadian clock sets itself by regularity; the gap between body time and social time ("social jetlag") tracks with worse sleep and daytime function. A single anchor beats any clever bedtime. <i>Wittmann et al. 2006, Chronobiology International; core of behavioral insomnia treatment.</i></p>
+      <p><b>Sleep need from age-band consensus, refined by your own history.</b> Expert consensus: adults 18–64 need 7–9 h (65+: 7–8 h; teens: 8–10 h); adults regularly under 7 h show measurable impairment. Your unconstrained ("vacation") duration locates you inside that band. <i>Hirshkowitz et al. 2015, Sleep Health (NSF); Watson et al. 2015, Sleep (AASM/SRS).</i></p>
+      <p><b>Chronotype computed, not guessed.</b> Mid-sleep on free days, corrected for the sleep debt you carry into them (MSFsc), is the standard field measure of circadian phase — it's how "lark vs. owl" is measured in the research literature, and it's derived purely from the times you gave. <i>Roenneberg et al. 2003, Journal of Biological Rhythms (Munich ChronoType Questionnaire).</i></p>
+      <p><b>Morning light, evening dim.</b> Light is the clock's master input: bright light shortly after waking pulls your rhythm earlier; light in the hours before bed pushes it later. That's why the plan puts you outside within ~30 min of waking and dims screens before lights-out. <i>Khalsa et al. 2003, Journal of Physiology (human phase-response curve).</i></p>
+      <p><b>Caffeine cutoff with margin.</b> 400 mg taken a full 6 h before bed still cut measured sleep by over an hour in a controlled trial. The plan sets your cutoff ~9 h before lights-out. <i>Drake et al. 2013, Journal of Clinical Sleep Medicine.</i></p>
+      <p><b>Gradual shifts only.</b> The clock advances reliably by small daily steps, not leaps — the plan moves you 15 min every 2 nights, which is comfortably inside what morning light + fixed wake can hold onto.</p>
+      <p><b>Out of bed if not sleepy.</b> Stimulus control — keeping bed paired with sleep, not with lying awake — is among the best-validated single components of insomnia treatment. <i>Bootzin 1972; CBT-I is first-line care for chronic insomnia per Qaseem et al. 2016, Annals of Internal Medicine (ACP guideline).</i></p>
+      <p><b>Naps are borrowed sleep pressure.</b> Sleep drive builds the longer you're awake (the homeostatic process); a late or long nap spends it early. Short (&lt;20 min) and before ~14:30 if you must, none during the measure phase. <i>Borbély 1982 two-process model.</i></p>
+      <p><b>Where this tool stops.</b> Loud snoring, gasping, unrefreshing sleep despite adequate hours, or severe daytime sleepiness are clinical signs (e.g. sleep apnea) that scheduling cannot fix — that's a conversation with a clinician, and treating it changes everything else. This app is a self-experiment aid, not medical advice.</p>
+    </div>
+  </details>
+</section>
+
 <div style="margin-top:40px;text-align:center;font-family:'Bricolage Grotesque',sans-serif">
-  <p style="font-weight:700;font-size:19px">Poker ends at 9:00.<br><small style="color:var(--muted);font-family:'IBM Plex Sans';font-size:13px;font-weight:400">Every night. That's the whole contract.</small></p>
+  <p style="font-weight:700;font-size:19px" id="contractLine">One wake time. Every day.<br><small style="color:var(--muted);font-family:'IBM Plex Sans';font-size:13px;font-weight:400">That's the whole contract.</small></p>
 </div>
 
 </div>
 
 <script>
-const KEY='sleepexp:v2';
-const PENDING='sleepexp:pending';
-let state={startDate:null,entries:[],lightsOut:'22:30',lastShiftDate:null,savedAt:null};
+const KEY='wakeanchor:v1';
+const PENDING='wakeanchor:pending';
+let state={intake:null,plan:null,startDate:null,entries:[],lightsOut:null,lastShiftDate:null,savedAt:null};
 
 const $=id=>document.getElementById(id);
 const pad=n=>String(n).padStart(2,'0');
+const esc=s=>String(s==null?'':s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const toMin=t=>{if(!t)return null;const[a,b]=t.split(':').map(Number);return a*60+b};
-const fmtMin=m=>{if(m==null)return'—';m=Math.round(m)%1440;return pad(Math.floor(m/60))+':'+pad(m%60)};
-const fmt12=m=>{if(m==null)return'—';m=Math.round(m)%1440;let h=Math.floor(m/60),am=h<12;h=h%12||12;return h+':'+pad(m%60)+' '+(am?'AM':'PM')};
+const wrapMin=m=>((Math.round(m)%1440)+1440)%1440;
+const fmtMin=m=>{if(m==null)return'—';m=wrapMin(m);return pad(Math.floor(m/60))+':'+pad(m%60)};
+const fmt12=m=>{if(m==null)return'—';m=wrapMin(m);let h=Math.floor(m/60),am=h<12;h=h%12||12;return h+':'+pad(m%60)+' '+(am?'AM':'PM')};
+const fmtH=m=>m==null?'—':(m/60).toFixed(1)+'h';
 const todayStr=()=>{const d=new Date();return d.getFullYear()+'-'+pad(d.getMonth()+1)+'-'+pad(d.getDate())};
 const plusDays=(s,n)=>{const d=new Date(s+'T12:00:00');d.setDate(d.getDate()+n);return d.getFullYear()+'-'+pad(d.getMonth()+1)+'-'+pad(d.getDate())};
+// duration from evening time a to morning time b, midnight-crossing safe
+const spanMin=(a,b)=>{if(a==null||b==null)return null;let d=b-a;if(d<=0)d+=1440;return d};
 
 function dayNum(dateStr){
   if(!state.startDate)return null;
   const a=new Date(state.startDate+'T12:00:00'),b=new Date(dateStr+'T12:00:00');
   return Math.round((b-a)/86400000)+1;
 }
+// Phases, offset by the plan's shift-phase length S:
+// <1 baseline · 1..S shift · S+1..S+7 stabilize · S+8..S+17 measure · beyond: done
+function shiftLen(){return state.plan?state.plan.shiftDays:0}
 function phaseOf(n){
   if(n==null)return null;
+  const S=shiftLen();
   if(n<1)return n>=-4?'Baseline':'Pre-baseline';
-  if(n<=7)return'Stabilize';
-  if(n<=17)return'Measure';
+  if(n<=S)return'Shift';
+  if(n<=S+7)return'Stabilize';
+  if(n<=S+17)return'Measure';
   return'Done';
 }
 
-/* ---------- storage: artifact self-publish + localStorage mirror ----------
-   Primary: the page saves its data INTO the artifact itself (a data file,
-   published server-side via the artifact capability) — survives the Claude
-   app killing the webview and follows the account across devices.
-   Mirror: localStorage, which is also the primary when the same file is
-   hosted as a static site (real Safari persists it).
-   Last resort: the manual backup code, unchanged from v2. ---------- */
+/* ---------- storage: artifact self-publish + localStorage mirror ---------- */
 let art=null,db=null,artResolved=false;
 const DOC='app/state';
 function setStatus(t,c){const el=$('storeStatus');el.textContent=t;el.style.color=c||'var(--muted)'}
 function idleStatus(){
   if(db||art)setStatus('✓ Saves to your account (cloud) — safe across devices.','var(--good)');
-  else if(artResolved)setStatus('On-device storage. Fine in Safari (Add to Home Screen); inside the Claude app, copy a backup code after logging.','var(--dawn)');
+  else if(artResolved){
+    if(window.claude)setStatus('Cloud saving unavailable in this view — copy a backup code after logging (under Entries).','var(--dawn)');
+    else setStatus('Private: your data stays in this browser only — nothing is sent anywhere. A backup code lives under Entries.');
+  }
   else setStatus('Checking storage…');
 }
+/* Strict validation: state can arrive from the shared cloud db, a fetched
+   data file, or a pasted backup — all untrusted. Only well-typed fields
+   survive; a grossly malformed copy is rejected outright (null). */
+const cleanTime=t=>(typeof t==='string'&&/^\d{1,2}:\d{2}$/.test(t))?t:null;
+const cleanDate=d=>(typeof d==='string'&&/^\d{4}-\d{2}-\d{2}$/.test(d))?d:null;
+const clampInt=(n,lo,hi,dflt)=>{n=Math.round(Number(n));return Number.isFinite(n)?Math.max(lo,Math.min(hi,n)):dflt};
+function cleanEntry(e){
+  if(!e||typeof e!=='object')return null;
+  const date=cleanDate(e.date);
+  if(!date)return null;
+  return {date,out:cleanTime(e.out)||'',asleep:cleanTime(e.asleep)||'',wake:cleanTime(e.wake)||'',
+    wakes:clampInt(e.wakes,0,99,0),mode:e.mode==='natural'?'natural':'alarm',nap:e.nap===true,
+    rest:clampInt(e.rest,1,5,3),energy:clampInt(e.energy,1,5,3)};
+}
+function cleanPlan(p){
+  if(!p||typeof p!=='object')return null;
+  const out={};
+  for(const k of ['needMin','latBuf','msfsc','wakeMin','lightsOutMin','requiredWake','naturalWake',
+                  'viceStop','dim','wind','lightAfter','startBed','startWake','shiftMin','shiftDays']){
+    const n=Number(p[k]);
+    if(!Number.isFinite(n))return null;
+    out[k]=n;
+  }
+  out.caffCut=(p.caffCut==null)?null:(Number.isFinite(Number(p.caffCut))?Number(p.caffCut):null);
+  out.createdAt=typeof p.createdAt==='string'?p.createdAt:'';
+  out.viceName=typeof p.viceName==='string'?p.viceName.slice(0,60):'the usual time-sink';
+  out.chronoLabel=['earlier than most','later than most','middle of the pack'].indexOf(p.chronoLabel)>-1?p.chronoLabel:'middle of the pack';
+  const f=(p.flags&&typeof p.flags==='object')?p.flags:{};
+  out.flags={snore:f.snore===true,longLatency:f.longLatency===true,freeAlarm:f.freeAlarm===true,
+    teen:f.teen===true,bigShift:f.bigShift===true,lateCaff:f.lateCaff===true,dailyNap:f.dailyNap===true};
+  return out;
+}
 function normalize(v){
-  if(!v||typeof v!=='object'||!('entries'in v))return null;
-  return Object.assign({startDate:null,entries:[],lightsOut:'22:30',lastShiftDate:null,savedAt:null},v);
+  if(!v||typeof v!=='object'||Array.isArray(v)||!Array.isArray(v.entries))return null;
+  const seen={};
+  const entries=v.entries.map(cleanEntry).filter(Boolean)
+    .filter(e=>seen[e.date]?false:(seen[e.date]=true))
+    .sort((a,b)=>a.date<b.date?-1:1);
+  const intake=(v.intake&&typeof v.intake==='object'&&!Array.isArray(v.intake))?v.intake:null;
+  const plan=intake?cleanPlan(v.plan):null; // a plan without its intake is malformed
+  let savedAt=typeof v.savedAt==='string'?v.savedAt:null;
+  if(savedAt){const t=Date.parse(savedAt);if(!Number.isFinite(t)||t>Date.now()+48*3600*1000)savedAt=null}
+  return {intake:plan?intake:null,plan,startDate:plan?cleanDate(v.startDate):null,entries,
+    lightsOut:cleanTime(v.lightsOut)||(plan?fmtMin(plan.lightsOutMin):null),
+    lastShiftDate:cleanDate(v.lastShiftDate),savedAt};
 }
 async function load(){
-  let local=null,cloud=null,pending=null;
+  // Paint immediately from on-device state; reconcile cloud copies async.
+  let local=null,pending=null;
   try{local=normalize(JSON.parse(localStorage.getItem(KEY)))}catch(e){}
   try{pending=normalize(JSON.parse(sessionStorage.getItem(PENDING)))}catch(e){}
-  try{
-    const r=await fetch('data/state.json',{cache:'no-store'});
-    if(r.ok)cloud=normalize(await r.json());
-  }catch(e){}
-  const newest=[local,cloud,pending].filter(Boolean)
-    .sort((a,b)=>String(a.savedAt||'').localeCompare(String(b.savedAt||''))).pop();
-  if(newest)state=newest;
+  const newerOf=(a,b)=>!a?b:!b?a:(String(a.savedAt||'').localeCompare(String(b.savedAt||''))>=0?a:b);
+  const best=newerOf(local,pending);
+  if(best)state=best;
   try{sessionStorage.removeItem(PENDING)}catch(e){}
   render();
+  let cloud=null;
+  const fileP=fetch('data/state.json',{cache:'no-store'})
+    .then(r=>r.ok?r.json():null).then(j=>{cloud=normalize(j)}).catch(()=>{});
   const use=n=>(window.claude&&window.claude.use)?window.claude.use(n).catch(()=>null):Promise.resolve(null);
-  const both=await Promise.all([use('artifact'),use('db')]);
+  const both=await Promise.all([use('artifact'),use('db'),fileP]);
   art=both[0];db=both[1];
   artResolved=true;
-  // The cloud database is the most current copy when it exists — adopt it if newer.
   let cloudDb=null;
   if(db){try{const s=await db.doc(DOC).get();if(s.exists)cloudDb=normalize(s.data())}catch(e){}}
-  if(cloudDb&&String(cloudDb.savedAt||'').localeCompare(String(state.savedAt||''))>0){state=cloudDb;render();}
-  // If this device holds a newer copy than the cloud (e.g. a save made
-  // while capabilities were unavailable), push it up once.
+  const adopted=newerOf(newerOf(cloudDb,cloud),state);
+  if(adopted&&adopted!==state){state=adopted;render();}
   const upToDate=db?(cloudDb&&cloudDb.savedAt===state.savedAt):(cloud&&cloud.savedAt===state.savedAt);
   if((db||art)&&state.savedAt&&!upToDate)await persist();
   else idleStatus();
@@ -295,7 +502,6 @@ async function persist(){
   setStatus('Saving…','var(--dawn)');
   try{sessionStorage.setItem(PENDING,JSON.stringify(state))}catch(e){}
   let ok=false;
-  // Layer 1: cloud database — most widely served across viewers.
   if(db){
     for(let attempt=0;attempt<2&&!ok;attempt++){
       try{await db.doc(DOC).set(JSON.parse(JSON.stringify(state)));ok=true}
@@ -307,7 +513,6 @@ async function persist(){
       }
     }
   }
-  // Layer 2: publish into the artifact's own data file.
   if(!ok&&art){
     let attempt=0;
     while(!ok){
@@ -316,7 +521,7 @@ async function persist(){
         ok=true;
       }catch(err){
         const code=err&&err.code;
-        if(code==='conflict'){ok=true;break} // another view won; this one reloads to it, unsaved state is stashed
+        if(code==='conflict'){ok=true;break}
         if(['not_granted','not_writer','not_declared','capability_disabled','capability_removed'].indexOf(code)>-1){art=null;break}
         if((code==='upstream_error'&&attempt<1)||(code==='rate_limited'&&attempt<2)){
           attempt++;setStatus('Save hiccup — retrying…','var(--dawn)');
@@ -339,12 +544,7 @@ async function persist(){
   return ok;
 }
 
-function saveStart(){
-  const v=$('startDate').value;
-  if(!v)return;
-  state.startDate=v;
-  persist().then(render);
-}
+/* ---------- segments ---------- */
 function seg(btn){
   [...btn.parentElement.children].forEach(b=>{b.classList.remove('on');b.setAttribute('aria-pressed','false')});
   btn.classList.add('on');btn.setAttribute('aria-pressed','true');
@@ -352,9 +552,211 @@ function seg(btn){
 function setSeg(id,val){
   [...$(id).children].forEach(b=>{const on=b.dataset.v===val;b.classList.toggle('on',on);b.setAttribute('aria-pressed',String(on))});
 }
-function segVal(id){return $(id).querySelector('.on').dataset.v}
+function segVal(id){const el=$(id).querySelector('.on');return el?el.dataset.v:null}
 
+/* ---------- intake wizard ---------- */
+const WIZ_STEPS=7;
+let wizAt=0;
+const WIZ_TITLES=['Before we start','Your mornings','Sleep as it is now','Sleep need','Evenings','Falling asleep','Review'];
+function wizShow(focusTitle){
+  document.querySelectorAll('.wstep').forEach(el=>el.classList.toggle('hidden',+el.dataset.step!==wizAt));
+  $('wizTitle').textContent=WIZ_TITLES[wizAt];
+  $('wizCount').textContent=wizAt===0?'':'Step '+wizAt+' of '+(WIZ_STEPS-1);
+  $('wizBack').classList.toggle('hidden',wizAt===0);
+  $('wizNext').textContent=wizAt===0?'Let’s go':(wizAt===WIZ_STEPS-1?'Generate my plan':'Next');
+  $('wizErr').textContent='';
+  $('commitFields').classList.toggle('hidden',$('qNoCommit').checked);
+  if(wizAt===WIZ_STEPS-1)$('wizReview').innerHTML=wizReviewHtml();
+  if(focusTitle){$('wizTitle').setAttribute('tabindex','-1');$('wizTitle').focus();}
+}
+function wizValidate(){
+  if(wizAt===1&&!$('qNoCommit').checked){
+    if(!$('qCommit').value)return'Enter your earliest commitment time (or tick "no fixed commitments").';
+    if(!(+$('qPrep').value>0))return'Enter your prep minutes.';
+  }
+  if(wizAt===2){
+    for(const id of['qWorkBed','qWorkWake','qFreeBed','qFreeWake'])if(!$(id).value)return'Fill in all four times — best guesses are fine.';
+  }
+  return null;
+}
+function wizNav(dir){
+  if(dir>0){
+    const err=wizValidate();
+    if(err){$('wizErr').textContent=err;return}
+    if(wizAt===WIZ_STEPS-1){finishIntake();return}
+  }
+  wizAt=Math.max(0,Math.min(WIZ_STEPS-1,wizAt+dir));
+  wizShow(true);
+}
+function collectIntake(){
+  return {
+    noCommit:$('qNoCommit').checked,
+    commit:$('qCommit').value||'09:00', prep:+$('qPrep').value||60, commitDays:+$('qDays').value||5,
+    workBed:$('qWorkBed').value, workWake:$('qWorkWake').value,
+    freeBed:$('qFreeBed').value, freeWake:$('qFreeWake').value,
+    freeAlarm:segVal('segFreeAlarm')==='yes',
+    age:$('qAge').value, vac:+$('qVac').value, refreshed:segVal('segRefresh')==='yes',
+    vice:$('qVice').value.trim()||'the usual time-sink',
+    caff:$('qCaff').value, nap:$('qNap').value,
+    latency:+$('qLatency').value, snore:segVal('segSnore')==='yes'
+  };
+}
+function wizReviewHtml(){
+  const q=collectIntake(),p=computePlan(q);
+  return '<p>Commitments: <b style="color:var(--ink)">'+(q.noCommit?'none fixed':fmt12(toMin(q.commit))+' × '+q.commitDays+'d/wk, '+q.prep+' min prep')+'</b></p>'+
+    '<p>Now: committed days '+fmt12(toMin(q.workBed))+' → '+fmt12(toMin(q.workWake))+' · free days '+fmt12(toMin(q.freeBed))+' → '+fmt12(toMin(q.freeWake))+(q.freeAlarm?' (alarmed)':'')+'</p>'+
+    '<p>Estimated need <b style="color:var(--ink)">'+fmtH(p.needMin)+'</b> · body clock (corrected mid-sleep) <b style="color:var(--ink)">'+fmt12(p.msfsc)+'</b> — '+p.chronoLabel+'</p>'+
+    '<p>Proposed anchor: wake <b style="color:var(--ink)">'+fmt12(p.wakeMin)+'</b> every day, lights out <b style="color:var(--ink)">'+fmt12(p.lightsOutMin)+'</b>'+(p.shiftDays?' after a '+p.shiftDays+'-day gradual shift':'')+'</p>';
+}
+
+/* ---------- the plan: every number computed from the answers ---------- */
+function computePlan(q){
+  // 1) Sleep need: age-band consensus range, located by unconstrained duration.
+  const range=q.age==='teen'?[480,600]:q.age==='older'?[420,480]:[420,540];
+  let needMin=q.vac||Math.round((range[0]+range[1])/2);
+  needMin=Math.max(range[0],Math.min(range[1],needMin));
+  if(!q.refreshed&&q.vac&&q.vac<=range[0])needMin=Math.min(range[1],needMin+30); // unrefreshed at the floor → don't lowball
+  // 2) Chronotype: MSFsc per Roenneberg — mid-sleep on free days, corrected for weekly debt.
+  const sdW=spanMin(toMin(q.workBed),toMin(q.workWake));
+  const sdF=spanMin(toMin(q.freeBed),toMin(q.freeWake));
+  const w=q.noCommit?0:q.commitDays, f=7-w;
+  const sdWeek=(sdW*w+sdF*f)/7;
+  let msf=wrapMin(toMin(q.freeBed)+sdF/2);
+  let msfsc=sdF>sdW?wrapMin(msf-(sdF-sdWeek)/2):msf;
+  const chronoLabel=msfsc<210?'earlier than most':(msfsc>330?'later than most':'middle of the pack');
+  // 3) The anchor wake time: latest wake your life allows, never earlier than it must be.
+  const naturalWake=toMin(q.freeWake);
+  const requiredWake=q.noCommit?naturalWake:wrapMin(toMin(q.commit)-q.prep);
+  // morning times compare on a 0–24h scale; both are mornings, safe to compare directly
+  let wakeMin=q.noCommit?naturalWake:Math.min(requiredWake,naturalWake);
+  wakeMin=wrapMin(Math.round(wakeMin/5)*5);
+  // 4) Lights out = wake − need − your own latency (buffered).
+  const latBuf=Math.max(15,Math.min(30,q.latency));
+  let lightsOutMin=wrapMin(wakeMin-needMin-latBuf);
+  lightsOutMin=Math.round(lightsOutMin/5)*5;
+  // 5) Gradual shift: 15 min every 2 nights from where you are to the target.
+  const advWake=q.noCommit?0:Math.max(0,toMin(q.workWake)-wakeMin);
+  // lights-out advance measured on the evening scale (map post-midnight bedtimes past 24:00)
+  const evening=m=>m<720?m+1440:m;
+  const advLO=Math.max(0,evening(toMin(q.workBed))-evening(lightsOutMin));
+  const shiftMin=Math.max(advWake,advLO);
+  const shiftDays=shiftMin>30?2*Math.ceil(shiftMin/15):0;
+  // 6) Supporting times.
+  const caffCut=q.caff==='none'?null:wrapMin(evening(lightsOutMin)-540); // 9h before lights-out
+  return {
+    createdAt:new Date().toISOString(),
+    needMin,latBuf,msfsc,chronoLabel,
+    wakeMin,lightsOutMin,requiredWake,naturalWake,
+    viceName:q.vice,
+    viceStop:wrapMin(lightsOutMin-90),dim:wrapMin(lightsOutMin-60),wind:wrapMin(lightsOutMin-15),
+    lightAfter:wrapMin(wakeMin+10),caffCut,
+    startBed:toMin(q.workBed),startWake:toMin(q.workWake),
+    shiftMin,shiftDays,
+    flags:{
+      snore:q.snore,
+      longLatency:q.latency>=35,
+      freeAlarm:q.freeAlarm,
+      teen:q.age==='teen',
+      bigShift:shiftMin>120,
+      lateCaff:q.caff!=='none'&&+q.caff>=1020,
+      dailyNap:q.nap==='daily'
+    }
+  };
+}
+function finishIntake(){
+  state.intake=collectIntake();
+  state.plan=computePlan(state.intake);
+  state.lightsOut=fmtMin(state.plan.lightsOutMin);
+  state.startDate=null;state.entries=[];state.lastShiftDate=null;
+  persist().then(render);
+}
+function redoIntake(){
+  if(!confirm('Redo the questions? This clears the current plan, start date and all logged entries.'))return;
+  state.intake=null;state.plan=null;state.startDate=null;state.entries=[];state.lastShiftDate=null;state.lightsOut=null;
+  persist().then(()=>{wizAt=0;render()});
+}
+
+/* ---------- plan rendering ---------- */
+function planRow(t,what,why,cite){
+  return '<div class="plan-row"><time>'+t+'</time><div class="what">'+what+
+    '<details><summary>why</summary><div class="why">'+why+(cite?'<small class="cite">'+cite+'</small>':'')+'</div></details></div></div>';
+}
+function planHtml(){
+  const p=state.plan;if(!p)return'';
+  let h='<div class="chips">'+
+    '<div><b>'+fmt12(p.wakeMin)+'</b><span>anchor wake, 7 days</span></div>'+
+    '<div><b>'+fmtH(p.needMin)+'</b><span>your sleep need</span></div>'+
+    '<div><b>'+fmt12(p.msfsc)+'</b><span>body clock (mid-sleep)</span></div></div>';
+  h+=planRow(fmt12(p.wakeMin),'<b>Wake — every single day, weekends included.</b> This is the anchor; everything else hangs off it.',
+    'Regularity is the strongest lever: weekend sleep-ins ("social jetlag") drag your clock later and Monday pays for it. Chronotype: your corrected mid-sleep is '+fmt12(p.msfsc)+' — '+esc(p.chronoLabel)+'.',
+    'Wittmann 2006; Roenneberg 2003');
+  h+=planRow(fmt12(p.lightsOutMin),'<b>Lights out.</b> '+fmtH(p.needMin)+' need + '+p.latBuf+' min to fall asleep, counted back from wake.',
+    'Sleep need set from age-band consensus ('+(state.intake.age==='teen'?'8–10h':state.intake.age==='older'?'7–8h':'7–9h')+'), located by your unconstrained duration. The buffer is your own reported latency, not a generic one.',
+    'Hirshkowitz 2015; Watson 2015');
+  h+=planRow(fmt12(p.viceStop),'<b>'+esc(p.viceName)+' ends.</b> Hard stop, 90 min before lights-out.',
+    'You named the thing that actually keeps you up — so it gets the hard boundary, not a vague "wind down".','');
+  h+=planRow(fmt12(p.dim),'<b>Dim the house, screens down.</b>',
+    'Evening light pushes your clock later — the same lever as morning light, pointing the wrong way.','Khalsa 2003 (phase-response curve)');
+  h+=planRow(fmt12(p.lightAfter),'<b>Daylight within 10–30 min of waking.</b> Outside if at all possible.',
+    'Bright light just after waking pulls your rhythm earlier and cements the anchor. This is what makes the fixed wake time stick.','Khalsa 2003');
+  if(p.caffCut!=null)h+=planRow(fmt12(p.caffCut),'<b>Last caffeine.</b> 9 h before lights-out.',
+    '400 mg a full 6 h before bed still cut measured sleep by over an hour in a controlled trial; 9 h adds margin.','Drake 2013');
+  if(p.shiftDays)h+=planRow(p.shiftDays+' days','<b>Gradual shift first.</b> Lights-out and alarm move 15 min earlier every 2 nights, from '+fmt12(p.startBed)+' → '+fmt12(p.lightsOutMin)+'.',
+    'Your clock advances in small steps, not leaps — a cold-turkey '+Math.round(p.shiftMin)+'-min jump mostly produces lying awake. The Today card shows each night’s times.','');
+  h+='<h3>Then the experiment</h3><p class="mut" style="font-size:13.5px">4 baseline days (log as-is) → '+(p.shiftDays?p.shiftDays+' shift days → ':'')+
+    '7 stabilize days on the schedule → ~10 measure days with the <b style="color:var(--ink)">alarm off</b> to see where your wake actually lands. Verdict rules are locked now, below.</p>';
+  h+='<div class="rules">'+rulesHtml()+'</div>';
+  return h;
+}
+function rulesHtml(){
+  const p=state.plan;if(!p)return'';
+  const W=p.wakeMin;
+  return '<p><b>Confirmed:</b> median natural wake within ±20 min of '+fmt12(W)+'.</p>'+
+    '<p><b>Shift later:</b> wake ≥'+fmt12(W+30)+' on 4+ valid days.</p>'+
+    '<p><b>Shift earlier:</b> wake before '+fmt12(W-20)+' with rested ≥4 on 4+ valid days.</p>'+
+    '<p><b>Extend:</b> avg sleep still ≥'+fmtH(p.needMin+30)+' at day 14 — debt not yet paid, keep measuring.</p>'+
+    '<p>Valid = measure phase, 3rd measure day on, natural wake, no nap.</p>'+
+    '<p><b>Escape valve:</b> 45+ min to fall asleep, 3 straight stabilize nights → lights-out moves 15 min later. The '+fmt12(W)+' wake never moves.</p>';
+}
+function flagsHtml(){
+  const p=state.plan;if(!p)return'';
+  let h='';
+  if(p.flags.snore)h+='<div class="banner warn" style="margin-top:16px"><b>Please read this one:</b> loud snoring or gasping awake are classic signs of sleep apnea, which no schedule can fix — and treating it changes everything. Book a conversation with a clinician (a home sleep study is often all it takes). This plan can run in parallel, but don’t let it substitute.</div>';
+  if(p.flags.longLatency)h+='<div class="banner"><b>Long time falling asleep:</b> your window is deliberately snug, and the rule that matters most for you: not sleepy after ~20 min → out of bed, dim light, boring activity, back when heavy. Bed stays paired with sleep. If 45+ min persists for weeks, CBT-I with a clinician is first-line care and works.</div>';
+  if(p.flags.bigShift)h+='<div class="banner"><b>Big shift ahead ('+Math.round(p.shiftMin/60*10)/10+' h):</b> the plan walks there gradually, but consider whether any morning commitment could flex 30 min — meeting your clock halfway raises the odds a lot.</div>';
+  if(p.flags.freeAlarm)h+='<div class="banner"><b>You alarm on free days too,</b> so your "natural wake" answer may be masked — the measure phase will reveal the real number.</div>';
+  if(p.flags.lateCaff)h+='<div class="banner"><b>Evening caffeine</b> is likely a bigger lever for you than any timing tweak — the cutoff above is doing real work.</div>';
+  if(p.flags.dailyNap)h+='<div class="banner"><b>Daily napper:</b> keep naps under 20 min and before ~14:30 during stabilize; none during measure (they contaminate the wake-time data).</div>';
+  return h;
+}
+
+/* ---------- experiment mechanics (parameterized by the plan) ---------- */
+function saveStart(){
+  const v=$('startDate').value;
+  if(!v)return;
+  state.startDate=v;
+  persist().then(render);
+}
+// tonight's lights-out & alarm, shift-phase aware (nTomorrow = day number of the coming morning)
+function tonightTimes(nTomorrow){
+  const p=state.plan,S=shiftLen();
+  const lo=toMin(state.lightsOut);
+  if(!p)return{lo:lo,wake:null};
+  if(nTomorrow>=1&&nTomorrow<=S){
+    const a=Math.min(15*Math.ceil(nTomorrow/2),p.shiftMin);
+    const evening=m=>m<720?m+1440:m;
+    const loTonight=Math.max(evening(p.startBed)-a,evening(lo)); // step toward target, never past it
+    const wakeAdv=Math.min(a,Math.max(0,p.startWake-p.wakeMin));
+    return{lo:wrapMin(loTonight),wake:wrapMin(p.startWake-wakeAdv)};
+  }
+  return{lo:lo,wake:p.wakeMin};
+}
 function saveEntry(){
+  if(!$('fOut').value||!$('fAsleep').value||!$('fWake').value){
+    $('saveMsg').textContent='Fill in lights out, asleep and wake times — best guesses are fine.';
+    $('bkAuto').classList.add('hidden');
+    return;
+  }
   const e={
     date:$('fDate').value||todayStr(),
     out:$('fOut').value,asleep:$('fAsleep').value,wake:$('fWake').value,
@@ -372,22 +774,22 @@ function afterSave(ok){
   if(ok&&(db||art)){m.textContent='Saved — synced to your account.';p.classList.add('hidden');}
   else if(ok){m.textContent='Saved on this device.';p.classList.add('hidden');}
   else{
-    m.textContent='Save didn’t confirm — backup code below just in case. Long-press to copy, paste into Notes or send to Claude:';
+    m.textContent='Save didn’t confirm — backup code below just in case. Long-press to copy, paste into Notes:';
     p.textContent=JSON.stringify(state);
     p.classList.remove('hidden');
   }
 }
 function copyBackup(){
   const txt=JSON.stringify(state);
-  const done=ok=>{$('bkMsg').textContent=ok?'Backup copied — paste it into Notes or a chat message to me. Restore it here next session.':'Couldn’t auto-copy; long-press the code below.';if(!ok){const p=document.createElement('pre');p.style.cssText='font-size:10px;color:var(--muted);white-space:pre-wrap;word-break:break-all;margin-top:8px';p.textContent=txt;$('bkMsg').after(p)}};
+  const done=ok=>{$('bkMsg').textContent=ok?'Backup copied — paste it into Notes. Restore it here any time.':'Couldn’t auto-copy; long-press the code below.';if(!ok){const p=document.createElement('pre');p.style.cssText='font-size:10px;color:var(--muted);white-space:pre-wrap;word-break:break-all;margin-top:8px';p.textContent=txt;$('bkMsg').after(p)}};
   if(navigator.clipboard&&navigator.clipboard.writeText){navigator.clipboard.writeText(txt).then(()=>done(true),()=>done(false))}
   else done(false);
 }
 function restoreBackup(){
   try{
-    const v=JSON.parse($('bkIn').value.trim());
-    if(!v||typeof v!=='object'||!('entries'in v))throw 0;
-    state=normalize(v);
+    const nv=normalize(JSON.parse($('bkIn').value.trim()));
+    if(!nv)throw 0;
+    state=nv;
     persist().then(render);
     $('bkMsg').textContent='Restored '+state.entries.length+' entries.';
   }catch(e){$('bkMsg').textContent='That doesn’t look like a valid backup code.';}
@@ -398,11 +800,11 @@ function delEntry(d){
   persist().then(render);
 }
 async function resetAll(){
-  if(!confirm('Delete ALL experiment data and start over? This can’t be undone.'))return;
-  state={startDate:null,entries:[],lightsOut:'22:30',lastShiftDate:null,savedAt:null};
+  if(!confirm('Delete ALL data — answers, plan and every entry? This can’t be undone.'))return;
+  state={intake:null,plan:null,startDate:null,entries:[],lightsOut:null,lastShiftDate:null,savedAt:null};
   try{localStorage.removeItem(KEY)}catch(e){}
   await persist();
-  render();
+  wizAt=0;render();
 }
 
 function latency(e){
@@ -417,8 +819,8 @@ function sleepDur(e){
   return a>w?(1440-a)+w:w-a;
 }
 function validMeasure(e){
-  const n=dayNum(e.date);
-  return n!=null&&n>=10&&n<=21&&e.mode==='natural'&&!e.nap;
+  const n=dayNum(e.date),S=shiftLen();
+  return n!=null&&n>=S+10&&n<=S+21&&e.mode==='natural'&&!e.nap;
 }
 function median(arr){
   if(!arr.length)return null;
@@ -428,7 +830,6 @@ function median(arr){
 const avg=a=>a.length?a.reduce((x,y)=>x+y,0)/a.length:null;
 
 function checkValve(){
-  // 3 most recent stabilize entries since last shift, all latency >= 45
   const stab=state.entries.filter(e=>phaseOf(dayNum(e.date))==='Stabilize')
     .filter(e=>!state.lastShiftDate||e.date>state.lastShiftDate);
   if(stab.length<3)return false;
@@ -441,16 +842,21 @@ function shiftBedtime(){
   persist().then(render);
 }
 
-function buildSched(){
-  const lo=toMin(state.lightsOut);
-  return [
-    {m:21*60,txt:'Poker ends. Hard stop.'},
-    {m:21*60+30,txt:'Dim the house, screens down.'},
-    {m:lo-15,txt:'Wind down — quiet, offline.'},
-    {m:lo,txt:'Lights out. Not sleepy → out of bed, dim light.'},
-    {m:7*60,txt:'Up immediately.',sun:true},
-    {m:7*60+10,txt:'Outside with Ruby — light moves the clock.',sun:true}
-  ];
+function buildSched(nTomorrow){
+  const p=state.plan;
+  const t=tonightTimes(nTomorrow);
+  const lo=t.lo,W=t.wake!=null?t.wake:p.wakeMin;
+  const items=[];
+  if(p.caffCut!=null)items.push({m:p.caffCut,txt:'Last caffeine of the day.'});
+  items.push(
+    {m:wrapMin(lo-90),txt:esc(p.viceName)+' ends. Hard stop.'},
+    {m:wrapMin(lo-60),txt:'Dim the house, screens down.'},
+    {m:wrapMin(lo-15),txt:'Wind down — quiet, offline.'},
+    {m:wrapMin(lo),txt:'Lights out. Not sleepy → out of bed, dim light.'},
+    {m:W,txt:'Up immediately.',key:'up'},
+    {m:wrapMin(W+10),txt:'Outside — daylight moves the clock.',key:'light'}
+  );
+  return items;
 }
 
 function baselineStats(){
@@ -477,18 +883,19 @@ function measureStats(){
 }
 
 function computeVerdict(){
+  const p=state.plan;if(!p)return;
   const valid=state.entries.filter(validMeasure);
   const wakes=valid.map(e=>toMin(e.wake)).filter(x=>x!=null);
   const durs=valid.map(sleepDur).filter(x=>x!=null);
   const med=median(wakes);
   const avgDur=avg(durs);
   $('sWake').textContent=fmtMin(med);
-  $('sSleep').textContent=avgDur?(avgDur/60).toFixed(1)+'h':'—';
+  $('sSleep').textContent=avgDur?fmtH(avgDur):'—';
   $('sValid').textContent=valid.length;
 
   const lbl=$('vLabel'),why=$('vWhy');
   lbl.className='vbig';
-  const target=7*60;
+  const target=p.wakeMin;
   const maxDay=Math.max(0,...state.entries.map(e=>dayNum(e.date)||0));
 
   if(valid.length<4){
@@ -499,18 +906,18 @@ function computeVerdict(){
   const laterDays=valid.filter(e=>toMin(e.wake)>=target+30).length;
   const earlierDays=valid.filter(e=>toMin(e.wake)<target-20&&e.rest>=4).length;
 
-  if(avgDur!=null&&avgDur>=540&&maxDay>=14){
+  if(avgDur!=null&&avgDur>=p.needMin+30&&maxDay>=shiftLen()+14){
     lbl.classList.add('v-extend');lbl.textContent='Extend the measure week';
-    why.textContent='Averaging '+(avgDur/60).toFixed(1)+'h — sleep debt likely not cleared. Keep logging through day 17+.';
+    why.textContent='Averaging '+fmtH(avgDur)+' — sleep debt likely not cleared. Keep logging.';
   }else if(laterDays>=4){
     lbl.classList.add('v-later');lbl.textContent='Shift later';
-    why.textContent=laterDays+' valid days at 7:30+. Your phase is later than the hypothesis — move bedtime and wake later.';
+    why.textContent=laterDays+' valid days at '+fmt12(target+30)+'+. Your phase is later than the plan — move bedtime and wake later together.';
   }else if(earlierDays>=4){
     lbl.classList.add('v-earlier');lbl.textContent='Shift earlier';
-    why.textContent=earlierDays+' valid days waking before 6:40 feeling rested. Claim the earlier morning.';
+    why.textContent=earlierDays+' valid days waking before '+fmt12(target-20)+' feeling rested. Claim the earlier morning.';
   }else if(med!=null&&Math.abs(med-target)<=20){
-    lbl.classList.add('v-keep');lbl.textContent='10:30 → 7:00 confirmed';
-    why.textContent='Median natural wake '+fmtMin(med)+' — within ±20 min of 7:00. Set the alarm there permanently.';
+    lbl.classList.add('v-keep');lbl.textContent=fmt12(target)+' confirmed';
+    why.textContent='Median natural wake '+fmtMin(med)+' — within ±20 min of '+fmt12(target)+'. Set the alarm there permanently.';
   }else{
     lbl.classList.add('v-wait');lbl.textContent='Borderline — keep logging';
     why.textContent='Median '+fmtMin(med)+'. No rule cleanly triggered yet; a few more valid days will settle it.';
@@ -518,107 +925,146 @@ function computeVerdict(){
 }
 
 function copyReport(){
-  const lines=['SLEEP EXPERIMENT REPORT','Day 1: '+state.startDate,'Lights-out (final): '+state.lightsOut,''];
+  const p=state.plan;
+  const lines=['WAKE ANCHOR — EXPERIMENT REPORT',
+    'Anchor wake: '+fmtMin(p.wakeMin)+' | lights out (final): '+state.lightsOut+' | need estimate: '+fmtH(p.needMin)+' | chronotype (MSFsc): '+fmtMin(p.msfsc),
+    'Day 1: '+state.startDate+(p.shiftDays?' | shift phase: '+p.shiftDays+' days':''),''];
   const dump=(title,arr)=>{
     if(!arr.length)return;
     lines.push(title);
     arr.forEach(e=>{
       const l=latency(e),d=sleepDur(e);
-      lines.push('D'+dayNum(e.date)+' '+e.date+' | out '+e.out+' asleep '+e.asleep+' wake '+e.wake+' ('+e.mode+') | latency '+(l==null?'—':l+'m')+' | sleep '+(d==null?'—':(d/60).toFixed(1)+'h')+' | wakes '+e.wakes+' | rested '+e.rest+' energy '+e.energy+(e.nap?' | NAP':''));
+      lines.push('D'+dayNum(e.date)+' '+e.date+' | out '+e.out+' asleep '+e.asleep+' wake '+e.wake+' ('+e.mode+') | latency '+(l==null?'—':l+'m')+' | sleep '+(d==null?'—':fmtH(d))+' | wakes '+e.wakes+' | rested '+e.rest+' energy '+e.energy+(e.nap?' | NAP':''));
     });
     lines.push('');
   };
-  dump('BASELINE',state.entries.filter(e=>phaseOf(dayNum(e.date))==='Baseline'));
-  dump('STABILIZE',state.entries.filter(e=>phaseOf(dayNum(e.date))==='Stabilize'));
-  dump('MEASURE',state.entries.filter(e=>phaseOf(dayNum(e.date))==='Measure'));
+  for(const ph of['Baseline','Shift','Stabilize','Measure'])
+    dump(ph.toUpperCase(),state.entries.filter(e=>phaseOf(dayNum(e.date))===ph));
   const ms=measureStats();
-  if(ms)lines.push('Median natural wake: '+fmtMin(ms.wake)+' | avg sleep: '+(ms.dur/60).toFixed(1)+'h | valid days: '+ms.n);
+  if(ms)lines.push('Median natural wake: '+fmtMin(ms.wake)+' | avg sleep: '+fmtH(ms.dur)+' | valid days: '+ms.n);
   lines.push('Verdict shown: '+$('vLabel').textContent);
+  lines.push('Pre-registered rules: confirmed if median within ±20m of '+fmtMin(p.wakeMin)+'; later if ≥'+fmtMin(p.wakeMin+30)+' on 4+; earlier if <'+fmtMin(p.wakeMin-20)+' & rested≥4 on 4+; extend if avg ≥'+fmtH(p.needMin+30)+' at day 14.');
   const txt=lines.join('\n');
-  const done=ok=>{$('copyMsg').textContent=ok?'Copied — paste it to me in chat.':'Couldn’t copy automatically; long-press the text below.';if(!ok){const p=document.createElement('pre');p.style.cssText='font-size:11px;color:var(--muted);white-space:pre-wrap;margin-top:8px';p.textContent=txt;$('copyMsg').after(p)}};
+  const done=ok=>{$('copyMsg').textContent=ok?'Copied — paste it into a note, or into an AI chat for a read-out against the rules.':'Couldn’t copy automatically; long-press the text below.';if(!ok){const pr=document.createElement('pre');pr.style.cssText='font-size:11px;color:var(--muted);white-space:pre-wrap;margin-top:8px';pr.textContent=txt;$('copyMsg').after(pr)}};
   if(navigator.clipboard&&navigator.clipboard.writeText){navigator.clipboard.writeText(txt).then(()=>done(true),()=>done(false))}
   else done(false);
 }
 
+/* ---------- render ---------- */
 function render(){
-  const started=!!state.startDate;
-  $('setup').classList.toggle('hidden',started);
+  const hasPlan=!!state.plan, started=!!state.startDate;
+  $('wizSec').classList.toggle('hidden',hasPlan);
+  $('planSec').classList.toggle('hidden',!hasPlan||started);
   ['todaySec','logSec','verdictSec','histSec'].forEach(id=>$(id).classList.toggle('hidden',!started));
-  if(!started){$('startDate').value=plusDays(todayStr(),4);return}
+  if(state.plan){
+    $('contractLine').innerHTML='<span style="font-weight:700">'+esc(state.plan.viceName)+' ends at '+fmt12(state.plan.viceStop)+'.</span><br><small style="color:var(--muted);font-family:\'IBM Plex Sans\';font-size:13px;font-weight:400">Every night. That’s the whole contract.</small>';
+  }
+  if(!hasPlan){wizShow();return}
+  if(!started){
+    $('planCard').innerHTML=planHtml();
+    $('planFlags').innerHTML=flagsHtml();
+    if(!$('startDate').value)$('startDate').value=plusDays(todayStr(),4);
+    return;
+  }
 
+  const p=state.plan,S=shiftLen();
   const n=dayNum(todayStr()),ph=phaseOf(n);
-  $('dayLabel').textContent=(ph==='Baseline'?'Baseline · day '+(n+5)+' of 5':ph==='Pre-baseline'?'Baseline starts '+plusDays(state.startDate,-4):ph==='Done'?'Complete':'Day '+n+' of '+(ph==='Measure'?'8–17':'1–7'));
+  const totalDays=21+S;
+  $('dayLabel').textContent=(ph==='Baseline'?'Baseline · day '+(n+5)+' of 5':ph==='Pre-baseline'?'Baseline starts '+plusDays(state.startDate,-4):ph==='Done'?'Complete':
+    ph==='Shift'?'Shift · day '+n+' of '+S:
+    ph==='Stabilize'?'Day '+n+' · stabilize '+(n-S)+' of 7':
+    'Day '+n+' · measure '+(n-S-7)+' of 10');
   $('phaseLabel').textContent=ph==='Pre-baseline'?'Starts soon':ph;
-  const daysToAlarm=1-n;
+  const tt=tonightTimes(n+1);
   $('alarmLabel').innerHTML=
-    ph==='Stabilize'?'Alarm: <b>ON — 7:00, no snooze</b> · lights out <b>'+fmt12(toMin(state.lightsOut))+'</b>':
-    ph==='Measure'?'Alarm: <b>OFF — mask on, wake naturally, even past 7:30</b>':
-    ph==='Baseline'?'Alarm: <b>your usual one — change nothing, just log.</b> 7:00 alarm starts in '+daysToAlarm+' day'+(daysToAlarm===1?'':'s')+'.':
+    ph==='Shift'?'Alarm: <b>ON — '+fmt12(tt.wake)+' tomorrow</b> · lights out tonight <b>'+fmt12(tt.lo)+'</b> (walking toward '+fmt12(p.wakeMin)+')':
+    ph==='Stabilize'?'Alarm: <b>ON — '+fmt12(p.wakeMin)+', no snooze</b> · lights out <b>'+fmt12(toMin(state.lightsOut))+'</b>':
+    ph==='Measure'?'Alarm: <b>OFF — mask on, wake naturally, even past '+fmt12(p.wakeMin+30)+'</b>':
+    ph==='Baseline'?'Alarm: <b>your usual one — change nothing, just log.</b> The new schedule starts in '+(1-n)+' day'+((1-n)===1?'':'s')+'.':
     ph==='Done'?'Alarm: <b>back on — at whatever the verdict says</b>':'Nothing to do yet.';
 
   const sc=$('schedule');
-  if(ph==='Stabilize'||ph==='Measure'){
-    const S=buildSched();
+  if(ph==='Shift'||ph==='Stabilize'||ph==='Measure'){
+    const Sch=buildSched(n+1);
     const now=new Date(),nowM=now.getHours()*60+now.getMinutes();
-    let nextIdx=S.findIndex(s=>{
+    let nextIdx=Sch.findIndex(s=>{
       const sm=s.m<12*60?s.m+1440:s.m;
       const nm=nowM<12*60?nowM+1440:nowM;
       return sm>nm;
     });
     if(nextIdx===-1)nextIdx=0;
-    sc.innerHTML=S.map((s,i)=>{
-      if(ph==='Measure'&&s.sun)return i===4?'<div class="stop next"><time>Natural</time><span>Wake when your body says so. Get up when clearly awake.</span></div>':'';
+    sc.innerHTML=Sch.map((s,i)=>{
+      if(ph==='Measure'&&s.key==='up')return '<div class="stop next"><time>Natural</time><span>Wake when your body says so. Get up when clearly awake.</span></div>';
+      if(ph==='Measure'&&s.key==='light')return '';
       return '<div class="stop'+(i===nextIdx?' next':'')+'"><time>'+fmt12(s.m)+'</time><span>'+s.txt+'</span></div>';
     }).join('');
   }else{sc.innerHTML='';}
 
-  // escape valve
   const v=$('valve');
   if(ph==='Stabilize'&&checkValve()){
-    v.innerHTML='<div class="banner"><b>Escape valve triggered:</b> 45+ min to fall asleep, 3 nights running. The plan says shift lights-out 15 min later ('+fmt12(toMin(state.lightsOut)+15)+') and keep the 7:00 wake.<br><button onclick="shiftBedtime()">Shift lights-out to '+fmt12(toMin(state.lightsOut)+15)+'</button></div>';
+    v.innerHTML='<div class="banner"><b>Escape valve triggered:</b> 45+ min to fall asleep, 3 nights running. The plan says shift lights-out 15 min later ('+fmt12(toMin(state.lightsOut)+15)+') and keep the '+fmt12(p.wakeMin)+' wake.<br><button onclick="shiftBedtime()">Shift lights-out to '+fmt12(toMin(state.lightsOut)+15)+'</button></div>';
   }else v.innerHTML='';
 
-  const prog=Math.max(0,Math.min(100,((n+4)/21)*100));
+  const prog=Math.max(0,Math.min(100,((n+4)/totalDays)*100));
   $('progBar').style.width=prog+'%';
+  $('barLab').innerHTML='<span>Baseline</span>'+(S?'<span>Shift</span>':'')+'<span>Stabilize</span><span>Measure</span>';
 
   if(!$('fDate').value)$('fDate').value=todayStr();
-  if(!$('fOut').value)$('fOut').value=ph==='Baseline'?'23:59':state.lightsOut;
+  if(!$('fOut').value)$('fOut').value=ph==='Baseline'?'23:59':fmtMin(tonightTimes(n).lo);
   if(!$('fAsleep').value)$('fAsleep').value=$('fOut').value;
+  if(!$('fWake').value)$('fWake').value=fmtMin(p.wakeMin);
   setSeg('segMode',ph==='Measure'?'natural':'alarm');
 
-  // baseline vs measure comparison
   const bs=baselineStats(),ms=measureStats();
   $('baseSec').classList.toggle('hidden',!bs);
   if(bs){
-    const row=(lab,l,r)=>'<div class="cmp"><span class="l">'+l+'</span><span class="lab">'+lab+'</span><span class="r">'+r+'</span></div>';
+    const row=(lab,l,r)=>'<div class="plan-row" style="grid-template-columns:1fr auto 1fr"><span style="text-align:right;color:var(--muted);font-variant-numeric:tabular-nums">'+l+'</span><span style="font-size:11.5px;color:var(--muted);text-align:center;min-width:86px">'+lab+'</span><span style="font-weight:600;font-variant-numeric:tabular-nums">'+r+'</span></div>';
     $('baseCard').innerHTML=
       '<p class="mut" style="font-size:13px;margin-bottom:8px">Baseline ('+bs.n+'d, as-is) vs. valid measure days'+(ms?' ('+ms.n+'d)':' (none yet)')+'</p>'+
       row('avg lights out',fmtMin(bs.out),ms?fmtMin(ms.out):'—')+
       row('wake',fmtMin(bs.wake),ms?fmtMin(ms.wake):'—')+
-      row('avg sleep',(bs.dur?(bs.dur/60).toFixed(1)+'h':'—'),ms&&ms.dur?(ms.dur/60).toFixed(1)+'h':'—')+
+      row('avg sleep',fmtH(bs.dur),ms?fmtH(ms.dur):'—')+
       row('rested',bs.rest?bs.rest.toFixed(1):'—',ms&&ms.rest?ms.rest.toFixed(1):'—');
   }
 
-  // history
+  $('rulesBox').innerHTML=rulesHtml();
+  $('planEcho').innerHTML='<div class="card">'+planHtml()+'</div>'+flagsHtml()+
+    '<div style="margin-top:10px"><button class="ghost" onclick="redoIntake()">Redo the questions (clears entries)</button></div>';
+
   const h=$('histList');
   if(!state.entries.length){h.innerHTML='<p class="mut">No entries yet.</p>';}
   else{
     h.innerHTML=state.entries.slice().reverse().map(e=>{
       const dn=dayNum(e.date),phE=phaseOf(dn);
-      const inv=phE==='Measure'&&(dn<10||e.nap||e.mode!=='natural');
+      const inv=phE==='Measure'&&!validMeasure(e);
       const tag=phE==='Measure'?(inv?'<span class="tag inv">excluded</span>':'<span class="tag nat">valid</span>'):'<span class="tag">'+(phE||'').toLowerCase()+'</span>';
       const dur=sleepDur(e),lat=latency(e);
-      return '<div class="entry"><span class="d">D'+dn+'</span>'+
-        '<span class="meta">'+e.wake+' '+(e.mode==='natural'?'nat':'alarm')+' · '+(dur?(dur/60).toFixed(1)+'h':'—')+(lat!=null?' · lat '+lat+'m':'')+' · R'+e.rest+' E'+e.energy+(e.nap?' · nap':'')+'</span>'+
-        '<span>'+tag+' <button class="ghost" onclick="delEntry(\''+e.date+'\')" aria-label="Delete entry for '+e.date+'">✕</button></span></div>';
+      return '<div class="entry"><span class="d">D'+esc(dn)+'</span>'+
+        '<span class="meta">'+esc(e.wake||'—')+' '+(e.mode==='natural'?'nat':'alarm')+' · '+(dur?fmtH(dur):'—')+(lat!=null?' · lat '+lat+'m':'')+' · R'+esc(e.rest)+' E'+esc(e.energy)+(e.nap?' · nap':'')+'</span>'+
+        '<span>'+tag+' <button class="ghost" data-del="'+esc(e.date)+'" aria-label="Delete entry for '+esc(e.date)+'">✕</button></span></div>';
     }).join('');
   }
   computeVerdict();
 }
+$('histList').addEventListener('click',ev=>{
+  const b=ev.target.closest('button');
+  if(b&&b.dataset.del)delEntry(b.dataset.del);
+});
 load();
 </script>
 
 <script>
+(function() {
+  var w = document.querySelector('.wrap');
+  if (!w) return;
+  var banner = '';
+  if (banner) {
+    var h = w.querySelector('header');
+    if (h) h.insertAdjacentHTML('beforeend', banner);
+  }
+  w.insertAdjacentHTML('beforeend',
+    '<div style="background:#1B2140;border:1px solid #31396A;border-radius:12px;padding:12px 14px;font-size:13.5px;color:#9BA1C6;margin-top:14px;text-align:center">Curious where this came from? <a href="original/" style="color:#F2B463;font-weight:700">The original 10:30 \u2192 7:00 experiment</a><br>Use it every morning \u2014 on iPhone open in Safari, tap Share, then <b style="color:#EFEDFD">Add to Home Screen</b>.</div>');
+})();
 if ('serviceWorker' in navigator) {
   addEventListener('load', () => navigator.serviceWorker.register('sw.js').catch(() => {}));
 }
