@@ -1,4 +1,9 @@
-name: Deploy to GitHub Pages
+name: Publish to GitHub Pages
+
+# Pages is enabled with source = gh-pages branch (auto-provisioned by that
+# branch's first push). This workflow mirrors main to gh-pages on every push,
+# and GitHub's own pages-build-deployment then serves it. This avoids the
+# configure-pages enablement API, which the workflow token cannot call.
 
 on:
   push:
@@ -6,30 +11,16 @@ on:
   workflow_dispatch:
 
 permissions:
-  contents: read
-  pages: write
-  id-token: write
+  contents: write
 
 concurrency:
-  group: pages
+  group: pages-mirror
   cancel-in-progress: true
 
 jobs:
-  deploy:
+  publish:
     runs-on: ubuntu-latest
-    environment:
-      name: github-pages
-      url: ${{ steps.deployment.outputs.page_url }}
     steps:
       - uses: actions/checkout@v4
-      - name: Configure Pages
-        uses: actions/configure-pages@v5
-        with:
-          enablement: true
-      - name: Upload site
-        uses: actions/upload-pages-artifact@v3
-        with:
-          path: .
-      - name: Deploy
-        id: deployment
-        uses: actions/deploy-pages@v4
+      - name: Mirror main to gh-pages
+        run: git push origin HEAD:gh-pages --force
