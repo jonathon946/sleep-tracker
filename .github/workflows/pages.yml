@@ -4,8 +4,11 @@ name: Publish to GitHub Pages
 # branch's first push). This workflow mirrors main to gh-pages on every push,
 # and GitHub's own pages-build-deployment then serves it. This avoids the
 # configure-pages enablement API, which the workflow token cannot call.
-# checkout is pinned to a full commit SHA (v4.4.0) per the 2026-09-02
-# security review; the mirror push is a plain fast-forward (no --force).
+# Per the 2026-09-02 security review: checkout is pinned to a full commit
+# SHA (v4.4.0), and instead of a blind --force the mirror verifies that
+# gh-pages is an ancestor of main before pushing — a diverged gh-pages
+# fails the job loudly rather than being silently overwritten. The
+# ancestry check needs full history, hence fetch-depth 0 (the repo is tiny).
 
 on:
   push:
@@ -24,5 +27,14 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4.4.0
-      - name: Mirror main to gh-pages
-        run: git push origin HEAD:gh-pages
+        with:
+          fetch-depth: 0
+      - name: Mirror main to gh-pages (fast-forward only)
+        run: |
+          git fetch origin gh-pages
+          if git merge-base --is-ancestor origin/gh-pages HEAD; then
+            git push origin HEAD:gh-pages
+          else
+            echo "::error::gh-pages has diverged from main history; refusing to overwrite. Investigate before mirroring."
+            exit 1
+          fi
