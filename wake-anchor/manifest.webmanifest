@@ -1,0 +1,14 @@
+{
+  "name": "Wake Anchor",
+  "short_name": "Wake Anchor",
+  "description": "Answer seven steps, get a personalized evidence-based sleep schedule — then a 3-week self-experiment that tests it.",
+  "start_url": ".",
+  "scope": ".",
+  "display": "standalone",
+  "background_color": "#12172E",
+  "theme_color": "#12172E",
+  "icons": [
+    { "src": "../icon-192.png", "sizes": "192x192", "type": "image/png" },
+    { "src": "../icon-512.png", "sizes": "512x512", "type": "image/png" }
+  ]
+}

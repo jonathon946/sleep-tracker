@@ -1,0 +1,626 @@
+<!doctype html>
+<html lang="en">
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="theme-color" content="#12172E">
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="apple-touch-icon" href="icon-180.png">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<title>Sleep Experiment Tracker</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,300;12..96,500;12..96,700&family=IBM+Plex+Sans:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+:root{
+  --night:#12172E; --panel:#1B2140; --panel2:#20274B;
+  --ink:#EFEDFD; --muted:#9BA1C6; --dawn:#F2B463; --dusk:#8F7FF2; --line:#31396A;
+  --good:#8FE3A8; --bad:#E38F8F;
+}
+*{margin:0;padding:0;box-sizing:border-box}
+body{background:var(--night);color:var(--ink);font-family:'IBM Plex Sans',system-ui,sans-serif;font-size:16px;line-height:1.55;padding:0 0 64px;color-scheme:dark}
+.wrap{max-width:460px;margin:0 auto;padding:0 18px}
+header{padding:36px 0 6px}
+.kicker{color:var(--muted);font-size:13.5px;margin-bottom:4px}
+h1{font-family:'Bricolage Grotesque',sans-serif;font-weight:700;font-size:32px;line-height:1.05;letter-spacing:-.01em}
+h1 span{background:linear-gradient(90deg,var(--dusk),var(--dawn));-webkit-background-clip:text;background-clip:text;color:transparent}
+h2{font-family:'Bricolage Grotesque',sans-serif;font-weight:700;font-size:21px;margin-bottom:10px}
+section{margin-top:30px}
+.card{background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:18px}
+.mut{color:var(--muted)}
+button{font-family:'Bricolage Grotesque',sans-serif;font-weight:700;font-size:15px;color:var(--night);background:linear-gradient(90deg,var(--dusk),var(--dawn));border:0;border-radius:10px;padding:11px 18px;cursor:pointer;width:100%}
+button.ghost{background:var(--panel2);color:var(--ink);border:1px solid var(--line);font-weight:500}
+button:focus-visible,input:focus-visible,select:focus-visible{outline:2px solid var(--dawn);outline-offset:2px}
+label{display:block;font-size:13px;color:var(--muted);margin:12px 0 4px}
+input,select{width:100%;background:var(--panel2);border:1px solid var(--line);border-radius:9px;color:var(--ink);font-family:inherit;font-size:16px;padding:9px 11px;color-scheme:dark}
+.row2{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.seg{display:flex;gap:8px}
+.seg button{flex:1;background:var(--panel2);color:var(--muted);border:1px solid var(--line);font-weight:500}
+.seg button.on{background:var(--dusk);color:var(--night);border-color:var(--dusk);font-weight:700}
+.seg.amber button.on{background:var(--dawn);border-color:var(--dawn)}
+
+.today{background:linear-gradient(160deg,#241E4E,#1B2140);border:1px solid var(--line);border-radius:16px;padding:20px}
+.today .day{font-family:'Bricolage Grotesque',sans-serif;font-weight:700;font-size:15px;color:var(--dawn)}
+.today .phase{font-family:'Bricolage Grotesque',sans-serif;font-weight:700;font-size:30px;line-height:1.1;margin:2px 0 4px}
+.today .alarm{font-size:14.5px;color:var(--muted)}
+.today .alarm b{color:var(--ink)}
+.now{margin-top:14px;border-top:1px solid var(--line);padding-top:12px}
+.now .stop{display:flex;gap:12px;padding:6px 0;font-size:14.5px;color:var(--muted)}
+.now .stop time{font-family:'Bricolage Grotesque',sans-serif;font-weight:700;color:var(--ink);min-width:74px;font-variant-numeric:tabular-nums}
+.now .stop.next{color:var(--ink)}
+.now .stop.next time{color:var(--dawn)}
+.bar{height:6px;border-radius:6px;background:var(--panel2);margin-top:14px;overflow:hidden}
+.bar i{display:block;height:100%;background:linear-gradient(90deg,var(--dusk),var(--dawn))}
+.bar-lab{display:flex;justify-content:space-between;font-size:12px;color:var(--muted);margin-top:5px}
+
+.banner{margin-top:14px;border-left:3px solid var(--dusk);background:var(--panel2);border-radius:0 10px 10px 0;padding:12px 14px;font-size:14px}
+.banner b{color:var(--ink)}
+.banner button{margin-top:10px;width:auto;padding:8px 14px;font-size:13.5px}
+
+.entry{display:grid;grid-template-columns:auto 1fr auto;gap:10px;align-items:center;padding:10px 0;border-bottom:1px solid var(--line);font-size:14px}
+.entry:last-child{border-bottom:0}
+.entry .d{font-family:'Bricolage Grotesque',sans-serif;font-weight:700;font-variant-numeric:tabular-nums}
+.entry .meta{color:var(--muted)}
+.entry .tag{font-size:11.5px;padding:2px 8px;border-radius:999px;border:1px solid var(--line);color:var(--muted);white-space:nowrap}
+.entry .tag.nat{border-color:var(--dawn);color:var(--dawn)}
+.entry .tag.inv{border-color:var(--bad);color:var(--bad)}
+.entry button{width:auto;padding:4px 10px;font-size:12px}
+
+.vbig{font-family:'Bricolage Grotesque',sans-serif;font-weight:700;font-size:26px;margin:4px 0 6px}
+.v-keep{color:var(--good)}.v-later{color:var(--dusk)}.v-earlier{color:var(--dawn)}.v-extend{color:var(--bad)}.v-wait{color:var(--muted)}
+.vstats{display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px;margin-top:12px}
+.vstats div{background:var(--panel2);border-radius:10px;padding:10px;text-align:center}
+.vstats b{display:block;font-family:'Bricolage Grotesque',sans-serif;font-size:19px;font-variant-numeric:tabular-nums}
+.vstats span{font-size:11.5px;color:var(--muted)}
+.cmp{display:grid;grid-template-columns:1fr auto 1fr;gap:8px;align-items:center;padding:8px 0;border-bottom:1px solid var(--line);font-size:14px}
+.cmp:last-child{border-bottom:0}
+.cmp .l{text-align:right;color:var(--muted);font-variant-numeric:tabular-nums}
+.cmp .r{font-weight:600;font-variant-numeric:tabular-nums}
+.cmp .lab{font-size:11.5px;color:var(--muted);text-align:center;min-width:86px}
+details{margin-top:16px}
+summary{cursor:pointer;color:var(--muted);font-size:14px;padding:6px 0}
+summary:focus-visible{outline:2px solid var(--dawn);outline-offset:2px}
+.rules{font-size:13.5px;color:var(--muted);padding:8px 0 0}
+.rules p{padding:3px 0}
+.rules b{color:var(--ink)}
+.hidden{display:none}
+.notice{font-size:13px;color:var(--muted);margin-top:10px}
+.danger{color:var(--bad)}
+</style>
+
+<div class="wrap">
+
+<header>
+  <div class="kicker">18–21 days · one question: when does your body want to wake?</div>
+  <h1>Sleep Experiment <span>10:30 → 7:00</span></h1>
+  <div class="notice" id="storeStatus" role="status" aria-live="polite">Checking storage…</div>
+</header>
+
+<!-- SETUP -->
+<section id="setup" class="hidden">
+  <div class="card">
+    <h2>Pick Day 1</h2>
+    <p class="mut" style="font-size:14.5px">Day 1 is the first <b style="color:var(--ink)">7:00-alarm morning</b>. The 4 days before it are your baseline — live exactly as you do now (usual alarm, usual poker), just log each morning. We've pre-filled Day 1 as 4 days out so baseline starts tonight.</p>
+    <label for="startDate">Day 1 of Stabilize</label>
+    <input type="date" id="startDate">
+    <div style="margin-top:14px"><button onclick="saveStart()">Start the experiment</button></div>
+  </div>
+</section>
+
+<!-- TODAY -->
+<section id="todaySec" class="hidden">
+  <div class="today">
+    <div class="day" id="dayLabel"></div>
+    <div class="phase" id="phaseLabel"></div>
+    <div class="alarm" id="alarmLabel"></div>
+    <div class="now" id="schedule"></div>
+    <div id="valve"></div>
+    <div class="bar"><i id="progBar" style="width:0%"></i></div>
+    <div class="bar-lab"><span>Baseline</span><span>Stabilize</span><span>Measure</span></div>
+  </div>
+</section>
+
+<!-- LOG FORM -->
+<section id="logSec" class="hidden">
+  <h2>Morning log</h2>
+  <div class="card">
+    <label for="fDate">Night of</label>
+    <input type="date" id="fDate">
+    <div class="row2">
+      <div><label for="fOut">Lights out</label><input type="time" id="fOut"></div>
+      <div><label for="fAsleep">Est. asleep by</label><input type="time" id="fAsleep"></div>
+    </div>
+    <div class="row2">
+      <div><label for="fWake">Final wake</label><input type="time" id="fWake" value="07:00"></div>
+      <div><label for="fWakes">Overnight wakes</label><input type="number" id="fWakes" min="0" max="9" value="0"></div>
+    </div>
+    <label id="labMode">Woke by</label>
+    <div class="seg" id="segMode" role="group" aria-labelledby="labMode">
+      <button type="button" data-v="alarm" class="on" onclick="seg(this)">Alarm</button>
+      <button type="button" data-v="natural" onclick="seg(this)">Natural</button>
+    </div>
+    <label id="labNap">Napped today?</label>
+    <div class="seg amber" id="segNap" role="group" aria-labelledby="labNap">
+      <button type="button" data-v="no" class="on" onclick="seg(this)">No</button>
+      <button type="button" data-v="yes" onclick="seg(this)">Yes</button>
+    </div>
+    <div class="row2">
+      <div><label for="fRest">Rested (1–5)</label><select id="fRest"><option>1</option><option>2</option><option selected>3</option><option>4</option><option>5</option></select></div>
+      <div><label for="fEnergy">Energy (1–5)</label><select id="fEnergy"><option>1</option><option>2</option><option selected>3</option><option>4</option><option>5</option></select></div>
+    </div>
+    <div style="margin-top:16px"><button onclick="saveEntry()">Save entry</button></div>
+    <p class="notice" id="saveMsg" role="status" aria-live="polite"></p>
+    <pre id="bkAuto" class="hidden" style="font-size:10px;color:var(--muted);white-space:pre-wrap;word-break:break-all;margin-top:8px;background:var(--panel2);border-radius:8px;padding:10px"></pre>
+  </div>
+</section>
+
+<!-- BASELINE SUMMARY -->
+<section id="baseSec" class="hidden">
+  <h2>Baseline vs. measure</h2>
+  <div class="card" id="baseCard"></div>
+</section>
+
+<!-- VERDICT -->
+<section id="verdictSec" class="hidden">
+  <h2>Verdict</h2>
+  <div class="card">
+    <div class="vbig v-wait" id="vLabel">Collecting data…</div>
+    <p class="mut" style="font-size:14px" id="vWhy"></p>
+    <div class="vstats">
+      <div><b id="sWake">—</b><span>median natural wake</span></div>
+      <div><b id="sSleep">—</b><span>avg sleep (valid)</span></div>
+      <div><b id="sValid">0</b><span>valid measure days</span></div>
+    </div>
+    <details>
+      <summary>Pre-registered rules (locked before Day 1)</summary>
+      <div class="rules">
+        <p><b>Confirmed:</b> median natural wake within ±20 min of 7:00.</p>
+        <p><b>Shift later:</b> wake ≥7:30 on 4+ valid days.</p>
+        <p><b>Shift earlier:</b> wake before 6:40 with rested ≥4 on 4+ valid days.</p>
+        <p><b>Extend:</b> avg sleep still ≥9h at day 14.</p>
+        <p>Valid = measure phase, day 10+, natural wake, no nap.</p>
+        <p><b>Escape valve:</b> asleep 45+ min after lights-out for 3 straight stabilize nights → lights-out moves 15 min later. The 7:00 wake never moves.</p>
+      </div>
+    </details>
+    <div style="margin-top:16px"><button class="ghost" onclick="copyReport()">Copy report for Claude</button></div>
+    <p class="notice" id="copyMsg" role="status" aria-live="polite"></p>
+  </div>
+</section>
+
+<!-- HISTORY -->
+<section id="histSec" class="hidden">
+  <h2>Entries</h2>
+  <div class="card" id="histList"><p class="mut">No entries yet.</p></div>
+  <details>
+    <summary>Backup &amp; restore (belt-and-braces)</summary>
+    <div style="margin-top:8px">
+      <button class="ghost" onclick="copyBackup()">Copy backup code</button>
+      <p class="notice" id="bkMsg" role="status" aria-live="polite"></p>
+      <label for="bkIn">Paste a backup code to restore</label>
+      <input id="bkIn" placeholder="{&quot;startDate&quot;:...}">
+      <div style="margin-top:8px"><button class="ghost" onclick="restoreBackup()">Restore</button></div>
+    </div>
+  </details>
+  <details>
+    <summary>Reset experiment (clears everything)</summary>
+    <div style="margin-top:8px"><button class="ghost danger" onclick="resetAll()">Delete all data and start over</button></div>
+  </details>
+</section>
+
+<div style="margin-top:40px;text-align:center;font-family:'Bricolage Grotesque',sans-serif">
+  <p style="font-weight:700;font-size:19px">Poker ends at 9:00.<br><small style="color:var(--muted);font-family:'IBM Plex Sans';font-size:13px;font-weight:400">Every night. That's the whole contract.</small></p>
+</div>
+
+</div>
+
+<script>
+const KEY='sleepexp:v2';
+const PENDING='sleepexp:pending';
+let state={startDate:null,entries:[],lightsOut:'22:30',lastShiftDate:null,savedAt:null};
+
+const $=id=>document.getElementById(id);
+const pad=n=>String(n).padStart(2,'0');
+const toMin=t=>{if(!t)return null;const[a,b]=t.split(':').map(Number);return a*60+b};
+const fmtMin=m=>{if(m==null)return'—';m=Math.round(m)%1440;return pad(Math.floor(m/60))+':'+pad(m%60)};
+const fmt12=m=>{if(m==null)return'—';m=Math.round(m)%1440;let h=Math.floor(m/60),am=h<12;h=h%12||12;return h+':'+pad(m%60)+' '+(am?'AM':'PM')};
+const todayStr=()=>{const d=new Date();return d.getFullYear()+'-'+pad(d.getMonth()+1)+'-'+pad(d.getDate())};
+const plusDays=(s,n)=>{const d=new Date(s+'T12:00:00');d.setDate(d.getDate()+n);return d.getFullYear()+'-'+pad(d.getMonth()+1)+'-'+pad(d.getDate())};
+
+function dayNum(dateStr){
+  if(!state.startDate)return null;
+  const a=new Date(state.startDate+'T12:00:00'),b=new Date(dateStr+'T12:00:00');
+  return Math.round((b-a)/86400000)+1;
+}
+function phaseOf(n){
+  if(n==null)return null;
+  if(n<1)return n>=-4?'Baseline':'Pre-baseline';
+  if(n<=7)return'Stabilize';
+  if(n<=17)return'Measure';
+  return'Done';
+}
+
+/* ---------- storage: artifact self-publish + localStorage mirror ----------
+   Primary: the page saves its data INTO the artifact itself (a data file,
+   published server-side via the artifact capability) — survives the Claude
+   app killing the webview and follows the account across devices.
+   Mirror: localStorage, which is also the primary when the same file is
+   hosted as a static site (real Safari persists it).
+   Last resort: the manual backup code, unchanged from v2. ---------- */
+let art=null,db=null,artResolved=false;
+const DOC='app/state';
+function setStatus(t,c){const el=$('storeStatus');el.textContent=t;el.style.color=c||'var(--muted)'}
+function idleStatus(){
+  if(db||art)setStatus('✓ Saves to your account (cloud) — safe across devices.','var(--good)');
+  else if(artResolved)setStatus('On-device storage. Fine in Safari (Add to Home Screen); inside the Claude app, copy a backup code after logging.','var(--dawn)');
+  else setStatus('Checking storage…');
+}
+function normalize(v){
+  if(!v||typeof v!=='object'||!('entries'in v))return null;
+  return Object.assign({startDate:null,entries:[],lightsOut:'22:30',lastShiftDate:null,savedAt:null},v);
+}
+async function load(){
+  let local=null,cloud=null,pending=null;
+  try{local=normalize(JSON.parse(localStorage.getItem(KEY)))}catch(e){}
+  try{pending=normalize(JSON.parse(sessionStorage.getItem(PENDING)))}catch(e){}
+  try{
+    const r=await fetch('data/state.json',{cache:'no-store'});
+    if(r.ok)cloud=normalize(await r.json());
+  }catch(e){}
+  const newest=[local,cloud,pending].filter(Boolean)
+    .sort((a,b)=>String(a.savedAt||'').localeCompare(String(b.savedAt||''))).pop();
+  if(newest)state=newest;
+  try{sessionStorage.removeItem(PENDING)}catch(e){}
+  render();
+  const use=n=>(window.claude&&window.claude.use)?window.claude.use(n).catch(()=>null):Promise.resolve(null);
+  const both=await Promise.all([use('artifact'),use('db')]);
+  art=both[0];db=both[1];
+  artResolved=true;
+  // The cloud database is the most current copy when it exists — adopt it if newer.
+  let cloudDb=null;
+  if(db){try{const s=await db.doc(DOC).get();if(s.exists)cloudDb=normalize(s.data())}catch(e){}}
+  if(cloudDb&&String(cloudDb.savedAt||'').localeCompare(String(state.savedAt||''))>0){state=cloudDb;render();}
+  // If this device holds a newer copy than the cloud (e.g. a save made
+  // while capabilities were unavailable), push it up once.
+  const upToDate=db?(cloudDb&&cloudDb.savedAt===state.savedAt):(cloud&&cloud.savedAt===state.savedAt);
+  if((db||art)&&state.savedAt&&!upToDate)await persist();
+  else idleStatus();
+}
+let publishing=false,dirty=false;
+async function persist(){
+  state.savedAt=new Date().toISOString();
+  let localOk=true;
+  try{localStorage.setItem(KEY,JSON.stringify(state))}catch(e){localOk=false}
+  if(!db&&!art){idleStatus();return artResolved?localOk:false}
+  if(publishing){dirty=true;return true}
+  publishing=true;
+  setStatus('Saving…','var(--dawn)');
+  try{sessionStorage.setItem(PENDING,JSON.stringify(state))}catch(e){}
+  let ok=false;
+  // Layer 1: cloud database — most widely served across viewers.
+  if(db){
+    for(let attempt=0;attempt<2&&!ok;attempt++){
+      try{await db.doc(DOC).set(JSON.parse(JSON.stringify(state)));ok=true}
+      catch(err){
+        const c=err&&err.code;
+        if(['not_granted','capability_disabled','capability_removed','revoked'].indexOf(c)>-1){db=null;break}
+        if(c==='unavailable'&&attempt===0){await new Promise(r=>setTimeout(r,1500+Math.random()*1500));continue}
+        break;
+      }
+    }
+  }
+  // Layer 2: publish into the artifact's own data file.
+  if(!ok&&art){
+    let attempt=0;
+    while(!ok){
+      try{
+        await art.publish({'data/state.json':JSON.stringify(state)});
+        ok=true;
+      }catch(err){
+        const code=err&&err.code;
+        if(code==='conflict'){ok=true;break} // another view won; this one reloads to it, unsaved state is stashed
+        if(['not_granted','not_writer','not_declared','capability_disabled','capability_removed'].indexOf(code)>-1){art=null;break}
+        if((code==='upstream_error'&&attempt<1)||(code==='rate_limited'&&attempt<2)){
+          attempt++;setStatus('Save hiccup — retrying…','var(--dawn)');
+          await new Promise(r=>setTimeout(r,code==='rate_limited'?15000:2500));continue;
+        }
+        break;
+      }
+    }
+  }
+  if(ok){
+    try{sessionStorage.removeItem(PENDING)}catch(e){}
+    setStatus('✓ Saved '+new Date().toLocaleTimeString([],{hour:'numeric',minute:'2-digit'})+' — synced to your account.','var(--good)');
+  }else if(db||art){
+    setStatus('⚠ Cloud save failed — data kept on this device. Copy the backup code below.','var(--bad)');
+  }else{
+    idleStatus();ok=localOk;
+  }
+  publishing=false;
+  if(dirty){dirty=false;return persist()}
+  return ok;
+}
+
+function saveStart(){
+  const v=$('startDate').value;
+  if(!v)return;
+  state.startDate=v;
+  persist().then(render);
+}
+function seg(btn){
+  [...btn.parentElement.children].forEach(b=>{b.classList.remove('on');b.setAttribute('aria-pressed','false')});
+  btn.classList.add('on');btn.setAttribute('aria-pressed','true');
+}
+function setSeg(id,val){
+  [...$(id).children].forEach(b=>{const on=b.dataset.v===val;b.classList.toggle('on',on);b.setAttribute('aria-pressed',String(on))});
+}
+function segVal(id){return $(id).querySelector('.on').dataset.v}
+
+function saveEntry(){
+  const e={
+    date:$('fDate').value||todayStr(),
+    out:$('fOut').value,asleep:$('fAsleep').value,wake:$('fWake').value,
+    wakes:+$('fWakes').value||0,
+    mode:segVal('segMode'),nap:segVal('segNap')==='yes',
+    rest:+$('fRest').value,energy:+$('fEnergy').value
+  };
+  state.entries=state.entries.filter(x=>x.date!==e.date);
+  state.entries.push(e);
+  state.entries.sort((a,b)=>a.date<b.date?-1:1);
+  persist().then(ok=>{afterSave(ok);render();});
+}
+function afterSave(ok){
+  const m=$('saveMsg'),p=$('bkAuto');
+  if(ok&&(db||art)){m.textContent='Saved — synced to your account.';p.classList.add('hidden');}
+  else if(ok){m.textContent='Saved on this device.';p.classList.add('hidden');}
+  else{
+    m.textContent='Save didn’t confirm — backup code below just in case. Long-press to copy, paste into Notes or send to Claude:';
+    p.textContent=JSON.stringify(state);
+    p.classList.remove('hidden');
+  }
+}
+function copyBackup(){
+  const txt=JSON.stringify(state);
+  const done=ok=>{$('bkMsg').textContent=ok?'Backup copied — paste it into Notes or a chat message to me. Restore it here next session.':'Couldn’t auto-copy; long-press the code below.';if(!ok){const p=document.createElement('pre');p.style.cssText='font-size:10px;color:var(--muted);white-space:pre-wrap;word-break:break-all;margin-top:8px';p.textContent=txt;$('bkMsg').after(p)}};
+  if(navigator.clipboard&&navigator.clipboard.writeText){navigator.clipboard.writeText(txt).then(()=>done(true),()=>done(false))}
+  else done(false);
+}
+function restoreBackup(){
+  try{
+    const v=JSON.parse($('bkIn').value.trim());
+    if(!v||typeof v!=='object'||!('entries'in v))throw 0;
+    state=normalize(v);
+    persist().then(render);
+    $('bkMsg').textContent='Restored '+state.entries.length+' entries.';
+  }catch(e){$('bkMsg').textContent='That doesn’t look like a valid backup code.';}
+}
+function delEntry(d){
+  if(!confirm('Delete the entry for '+d+'?'))return;
+  state.entries=state.entries.filter(x=>x.date!==d);
+  persist().then(render);
+}
+async function resetAll(){
+  if(!confirm('Delete ALL experiment data and start over? This can’t be undone.'))return;
+  state={startDate:null,entries:[],lightsOut:'22:30',lastShiftDate:null,savedAt:null};
+  try{localStorage.removeItem(KEY)}catch(e){}
+  await persist();
+  render();
+}
+
+function latency(e){
+  const o=toMin(e.out),a=toMin(e.asleep);
+  if(o==null||a==null)return null;
+  let l=a-o;if(l<-720)l+=1440;
+  return l>=0?l:null;
+}
+function sleepDur(e){
+  const a=toMin(e.asleep),w=toMin(e.wake);
+  if(a==null||w==null)return null;
+  return a>w?(1440-a)+w:w-a;
+}
+function validMeasure(e){
+  const n=dayNum(e.date);
+  return n!=null&&n>=10&&n<=21&&e.mode==='natural'&&!e.nap;
+}
+function median(arr){
+  if(!arr.length)return null;
+  const s=[...arr].sort((a,b)=>a-b),m=Math.floor(s.length/2);
+  return s.length%2?s[m]:(s[m-1]+s[m])/2;
+}
+const avg=a=>a.length?a.reduce((x,y)=>x+y,0)/a.length:null;
+
+function checkValve(){
+  // 3 most recent stabilize entries since last shift, all latency >= 45
+  const stab=state.entries.filter(e=>phaseOf(dayNum(e.date))==='Stabilize')
+    .filter(e=>!state.lastShiftDate||e.date>state.lastShiftDate);
+  if(stab.length<3)return false;
+  return stab.slice(-3).every(e=>{const l=latency(e);return l!=null&&l>=45});
+}
+function shiftBedtime(){
+  const m=toMin(state.lightsOut)+15;
+  state.lightsOut=fmtMin(m);
+  state.lastShiftDate=todayStr();
+  persist().then(render);
+}
+
+function buildSched(){
+  const lo=toMin(state.lightsOut);
+  return [
+    {m:21*60,txt:'Poker ends. Hard stop.'},
+    {m:21*60+30,txt:'Dim the house, screens down.'},
+    {m:lo-15,txt:'Wind down — quiet, offline.'},
+    {m:lo,txt:'Lights out. Not sleepy → out of bed, dim light.'},
+    {m:7*60,txt:'Up immediately.',sun:true},
+    {m:7*60+10,txt:'Outside with Ruby — light moves the clock.',sun:true}
+  ];
+}
+
+function baselineStats(){
+  const b=state.entries.filter(e=>phaseOf(dayNum(e.date))==='Baseline');
+  if(!b.length)return null;
+  return {
+    n:b.length,
+    wake:avg(b.map(e=>toMin(e.wake)).filter(x=>x!=null)),
+    dur:avg(b.map(sleepDur).filter(x=>x!=null)),
+    rest:avg(b.map(e=>e.rest)),
+    out:avg(b.map(e=>toMin(e.out)).filter(x=>x!=null))
+  };
+}
+function measureStats(){
+  const v=state.entries.filter(validMeasure);
+  if(!v.length)return null;
+  return {
+    n:v.length,
+    wake:median(v.map(e=>toMin(e.wake)).filter(x=>x!=null)),
+    dur:avg(v.map(sleepDur).filter(x=>x!=null)),
+    rest:avg(v.map(e=>e.rest)),
+    out:avg(v.map(e=>toMin(e.out)).filter(x=>x!=null))
+  };
+}
+
+function computeVerdict(){
+  const valid=state.entries.filter(validMeasure);
+  const wakes=valid.map(e=>toMin(e.wake)).filter(x=>x!=null);
+  const durs=valid.map(sleepDur).filter(x=>x!=null);
+  const med=median(wakes);
+  const avgDur=avg(durs);
+  $('sWake').textContent=fmtMin(med);
+  $('sSleep').textContent=avgDur?(avgDur/60).toFixed(1)+'h':'—';
+  $('sValid').textContent=valid.length;
+
+  const lbl=$('vLabel'),why=$('vWhy');
+  lbl.className='vbig';
+  const target=7*60;
+  const maxDay=Math.max(0,...state.entries.map(e=>dayNum(e.date)||0));
+
+  if(valid.length<4){
+    lbl.classList.add('v-wait');lbl.textContent='Collecting data…';
+    why.textContent=valid.length+' of 4 valid measure days logged. Verdict unlocks at 4.';
+    return;
+  }
+  const laterDays=valid.filter(e=>toMin(e.wake)>=target+30).length;
+  const earlierDays=valid.filter(e=>toMin(e.wake)<target-20&&e.rest>=4).length;
+
+  if(avgDur!=null&&avgDur>=540&&maxDay>=14){
+    lbl.classList.add('v-extend');lbl.textContent='Extend the measure week';
+    why.textContent='Averaging '+(avgDur/60).toFixed(1)+'h — sleep debt likely not cleared. Keep logging through day 17+.';
+  }else if(laterDays>=4){
+    lbl.classList.add('v-later');lbl.textContent='Shift later';
+    why.textContent=laterDays+' valid days at 7:30+. Your phase is later than the hypothesis — move bedtime and wake later.';
+  }else if(earlierDays>=4){
+    lbl.classList.add('v-earlier');lbl.textContent='Shift earlier';
+    why.textContent=earlierDays+' valid days waking before 6:40 feeling rested. Claim the earlier morning.';
+  }else if(med!=null&&Math.abs(med-target)<=20){
+    lbl.classList.add('v-keep');lbl.textContent='10:30 → 7:00 confirmed';
+    why.textContent='Median natural wake '+fmtMin(med)+' — within ±20 min of 7:00. Set the alarm there permanently.';
+  }else{
+    lbl.classList.add('v-wait');lbl.textContent='Borderline — keep logging';
+    why.textContent='Median '+fmtMin(med)+'. No rule cleanly triggered yet; a few more valid days will settle it.';
+  }
+}
+
+function copyReport(){
+  const lines=['SLEEP EXPERIMENT REPORT','Day 1: '+state.startDate,'Lights-out (final): '+state.lightsOut,''];
+  const dump=(title,arr)=>{
+    if(!arr.length)return;
+    lines.push(title);
+    arr.forEach(e=>{
+      const l=latency(e),d=sleepDur(e);
+      lines.push('D'+dayNum(e.date)+' '+e.date+' | out '+e.out+' asleep '+e.asleep+' wake '+e.wake+' ('+e.mode+') | latency '+(l==null?'—':l+'m')+' | sleep '+(d==null?'—':(d/60).toFixed(1)+'h')+' | wakes '+e.wakes+' | rested '+e.rest+' energy '+e.energy+(e.nap?' | NAP':''));
+    });
+    lines.push('');
+  };
+  dump('BASELINE',state.entries.filter(e=>phaseOf(dayNum(e.date))==='Baseline'));
+  dump('STABILIZE',state.entries.filter(e=>phaseOf(dayNum(e.date))==='Stabilize'));
+  dump('MEASURE',state.entries.filter(e=>phaseOf(dayNum(e.date))==='Measure'));
+  const ms=measureStats();
+  if(ms)lines.push('Median natural wake: '+fmtMin(ms.wake)+' | avg sleep: '+(ms.dur/60).toFixed(1)+'h | valid days: '+ms.n);
+  lines.push('Verdict shown: '+$('vLabel').textContent);
+  const txt=lines.join('\n');
+  const done=ok=>{$('copyMsg').textContent=ok?'Copied — paste it to me in chat.':'Couldn’t copy automatically; long-press the text below.';if(!ok){const p=document.createElement('pre');p.style.cssText='font-size:11px;color:var(--muted);white-space:pre-wrap;margin-top:8px';p.textContent=txt;$('copyMsg').after(p)}};
+  if(navigator.clipboard&&navigator.clipboard.writeText){navigator.clipboard.writeText(txt).then(()=>done(true),()=>done(false))}
+  else done(false);
+}
+
+function render(){
+  const started=!!state.startDate;
+  $('setup').classList.toggle('hidden',started);
+  ['todaySec','logSec','verdictSec','histSec'].forEach(id=>$(id).classList.toggle('hidden',!started));
+  if(!started){$('startDate').value=plusDays(todayStr(),4);return}
+
+  const n=dayNum(todayStr()),ph=phaseOf(n);
+  $('dayLabel').textContent=(ph==='Baseline'?'Baseline · day '+(n+5)+' of 5':ph==='Pre-baseline'?'Baseline starts '+plusDays(state.startDate,-4):ph==='Done'?'Complete':'Day '+n+' of '+(ph==='Measure'?'8–17':'1–7'));
+  $('phaseLabel').textContent=ph==='Pre-baseline'?'Starts soon':ph;
+  const daysToAlarm=1-n;
+  $('alarmLabel').innerHTML=
+    ph==='Stabilize'?'Alarm: <b>ON — 7:00, no snooze</b> · lights out <b>'+fmt12(toMin(state.lightsOut))+'</b>':
+    ph==='Measure'?'Alarm: <b>OFF — mask on, wake naturally, even past 7:30</b>':
+    ph==='Baseline'?'Alarm: <b>your usual one — change nothing, just log.</b> 7:00 alarm starts in '+daysToAlarm+' day'+(daysToAlarm===1?'':'s')+'.':
+    ph==='Done'?'Alarm: <b>back on — at whatever the verdict says</b>':'Nothing to do yet.';
+
+  const sc=$('schedule');
+  if(ph==='Stabilize'||ph==='Measure'){
+    const S=buildSched();
+    const now=new Date(),nowM=now.getHours()*60+now.getMinutes();
+    let nextIdx=S.findIndex(s=>{
+      const sm=s.m<12*60?s.m+1440:s.m;
+      const nm=nowM<12*60?nowM+1440:nowM;
+      return sm>nm;
+    });
+    if(nextIdx===-1)nextIdx=0;
+    sc.innerHTML=S.map((s,i)=>{
+      if(ph==='Measure'&&s.sun)return i===4?'<div class="stop next"><time>Natural</time><span>Wake when your body says so. Get up when clearly awake.</span></div>':'';
+      return '<div class="stop'+(i===nextIdx?' next':'')+'"><time>'+fmt12(s.m)+'</time><span>'+s.txt+'</span></div>';
+    }).join('');
+  }else{sc.innerHTML='';}
+
+  // escape valve
+  const v=$('valve');
+  if(ph==='Stabilize'&&checkValve()){
+    v.innerHTML='<div class="banner"><b>Escape valve triggered:</b> 45+ min to fall asleep, 3 nights running. The plan says shift lights-out 15 min later ('+fmt12(toMin(state.lightsOut)+15)+') and keep the 7:00 wake.<br><button onclick="shiftBedtime()">Shift lights-out to '+fmt12(toMin(state.lightsOut)+15)+'</button></div>';
+  }else v.innerHTML='';
+
+  const prog=Math.max(0,Math.min(100,((n+4)/21)*100));
+  $('progBar').style.width=prog+'%';
+
+  if(!$('fDate').value)$('fDate').value=todayStr();
+  if(!$('fOut').value)$('fOut').value=ph==='Baseline'?'23:59':state.lightsOut;
+  if(!$('fAsleep').value)$('fAsleep').value=$('fOut').value;
+  setSeg('segMode',ph==='Measure'?'natural':'alarm');
+
+  // baseline vs measure comparison
+  const bs=baselineStats(),ms=measureStats();
+  $('baseSec').classList.toggle('hidden',!bs);
+  if(bs){
+    const row=(lab,l,r)=>'<div class="cmp"><span class="l">'+l+'</span><span class="lab">'+lab+'</span><span class="r">'+r+'</span></div>';
+    $('baseCard').innerHTML=
+      '<p class="mut" style="font-size:13px;margin-bottom:8px">Baseline ('+bs.n+'d, as-is) vs. valid measure days'+(ms?' ('+ms.n+'d)':' (none yet)')+'</p>'+
+      row('avg lights out',fmtMin(bs.out),ms?fmtMin(ms.out):'—')+
+      row('wake',fmtMin(bs.wake),ms?fmtMin(ms.wake):'—')+
+      row('avg sleep',(bs.dur?(bs.dur/60).toFixed(1)+'h':'—'),ms&&ms.dur?(ms.dur/60).toFixed(1)+'h':'—')+
+      row('rested',bs.rest?bs.rest.toFixed(1):'—',ms&&ms.rest?ms.rest.toFixed(1):'—');
+  }
+
+  // history
+  const h=$('histList');
+  if(!state.entries.length){h.innerHTML='<p class="mut">No entries yet.</p>';}
+  else{
+    h.innerHTML=state.entries.slice().reverse().map(e=>{
+      const dn=dayNum(e.date),phE=phaseOf(dn);
+      const inv=phE==='Measure'&&(dn<10||e.nap||e.mode!=='natural');
+      const tag=phE==='Measure'?(inv?'<span class="tag inv">excluded</span>':'<span class="tag nat">valid</span>'):'<span class="tag">'+(phE||'').toLowerCase()+'</span>';
+      const dur=sleepDur(e),lat=latency(e);
+      return '<div class="entry"><span class="d">D'+dn+'</span>'+
+        '<span class="meta">'+e.wake+' '+(e.mode==='natural'?'nat':'alarm')+' · '+(dur?(dur/60).toFixed(1)+'h':'—')+(lat!=null?' · lat '+lat+'m':'')+' · R'+e.rest+' E'+e.energy+(e.nap?' · nap':'')+'</span>'+
+        '<span>'+tag+' <button class="ghost" onclick="delEntry(\''+e.date+'\')" aria-label="Delete entry for '+e.date+'">✕</button></span></div>';
+    }).join('');
+  }
+  computeVerdict();
+}
+load();
+</script>
+
+<script>
+if ('serviceWorker' in navigator) {
+  addEventListener('load', () => navigator.serviceWorker.register('sw.js').catch(() => {}));
+}
+</script>
+</html>

@@ -1,0 +1,14 @@
+{
+  "name": "Sleep Experiment Tracker",
+  "short_name": "Sleep Exp",
+  "description": "One 30-second log per morning. Three weeks. A pre-registered verdict on when your body wants to wake.",
+  "start_url": ".",
+  "scope": ".",
+  "display": "standalone",
+  "background_color": "#12172E",
+  "theme_color": "#12172E",
+  "icons": [
+    { "src": "icon-192.png", "sizes": "192x192", "type": "image/png" },
+    { "src": "icon-512.png", "sizes": "512x512", "type": "image/png" }
+  ]
+}
